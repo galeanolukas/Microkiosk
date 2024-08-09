@@ -1,0 +1,44 @@
+{% args msj, ssid, password, appname, modo, titulo, ip %}
+<html>
+{% include 'head.html' %}
+<body>
+    {% include 'top_bar.html' %}
+    <div class="w3-container w3-padding w3-center w3-animate-top w3-margin">
+     <p style="font-size:4em;"><ion-icon name="wifi-outline"></ion-icon></p>
+     <p style="color:red;">{% if msj %}{{ msj }}{% endif %}</p>
+     <form class="w3-container" type="" method="POST">
+      <label>Essid/Usuario</label>
+      <input class="w3-input w3-animate-input" name="essid" placeholder="USUARIO/ESSID" value="{{ ssid }}" type="text">
+      
+      <label>Password/Contraseña</label>
+      <input class="w3-input w3-animate-input" id="passInput" name="password" placeholder="PASSWORD" value="{{ password }}" type="password">
+      
+      <input class="w3-check" type="checkbox" onclick="myFunction()">Ver Password</input>
+      <br>
+       
+      <label for="cars">Modo:</label>
+      <select class="w3-input w3-animate-input" name="modo" id="modo">
+          <option value="ap" {% if modo == "ap" %}selected{% endif %}>Punto de Acceso (AP)</option>
+          <option value="st" {% if modo == "st" %}selected{% endif %}>Conectarse a Red (ST)</option>
+      </select>
+      <label>Fijar Ip</label>
+      <input class="w3-input w3-animate-input" name="ip" placeholder="FIJAR IP" value="{{ ip }}" type="text">
+      <br>
+      <br>
+      <button class="w3-button w3-block w3-teal" type="submit">CONECTAR</button>
+    </form>
+    </div>
+    <script>
+    function myFunction() {
+      var x = document.getElementById("passInput");
+      if (x.type === "password") {
+        x.type = "text";
+      } 
+      else {
+        x.type = "password";
+      }
+    } 
+    </script>
+{% include "footer.html" %}
+</body>
+</html>
