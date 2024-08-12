@@ -1,14 +1,44 @@
+{% args titulo, appname, modo, apps %}
 <html>
 {% include 'head.html' %}
 <body>
-{% include 'top_bar.html' %}
-    <div class="w3-container w3-padding w3-center w3-animate-top w3-margin">
-      <h1>Upload New App</h1>
-      <form action="/upload" method="post" enctype="multipart/form-data">
-                    <input type="file" name="file">
-                    <input type="submit" value="Upload">
+  {% include 'top_bar.html' %}
+  <div class="w3-container w3-padding w3-center w3-animate-top w3-margin">
+    <div class="w3-card-4 w3-padding w3-margin">
+      <h1>Cargar Nueva App</h1>
+      <form action="/upload" method="post" enctype="multipart/form-data" class="w3-row-padding">
+        <div class="w3-col l6 m6 s12">
+          <label for="file-input" class="w3-button w3-blue w3-round w3-full">
+            <ion-icon name="archive-outline" style="font-size: 24px;"></ion-icon> Seleccionar Archivo
+          </label>
+          <input id="file-input" type="file" name="file" accept=".zip" style="display: none;">
+        </div>
+        <div class="w3-col l6 m6 s12">
+          <input type="submit" class="w3-button w3-blue w3-margin-top w3-full" value="INSTALAR">
+        </div>
       </form>
     </div>
-{% include "footer.html" %}
+    <div class="w3-container w3-content">
+      <ul class="w3-ul w3-card-4">
+        {% if apps %}
+        {% for app in apps %}
+        <li class="w3-bar w3-padding w3-margin-bottom">
+          <span onclick="this.parentElement.style.display='none'" class="w3-bar-item w3-button w3-white w3-xlarge w3-right">×</span>
+          <img src="static/micropython.png" class="w3-bar-item w3-circle w3-hide-small" style="width:85px">
+          <div class="w3-bar-item">
+            <span class="w3-large">{{ app }}</span><br>
+            <span>Descripción de {{ app }}</span>
+          </div>
+        </li>
+        {% endfor %}
+        {% else %}
+        <li class="w3-bar">
+          <h2>No hay apps instaladas</h2>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
 </body>
+{% include "footer.html" %}
 </html>

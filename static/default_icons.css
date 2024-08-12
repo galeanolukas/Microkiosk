@@ -1,0 +1,46 @@
+        .icon {
+            width: 24px;
+            height: 24px;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        
+        .icon-alert-circle {
+            background-image: url('/static/icons/alert-circle.svg');
+        }
+        
+        .icon-home {
+            background-image: url('/static/icons/home.svg');
+        }
+        
+        .icon-reload-circle {
+            background-image: url('/static/icons/alert-reload.svg');
+        }
+        
+        .icon-close {
+            background-image: url('/static/icons/close.svg');
+        }
+        
+        .icon-server {
+            background-image: url('/static/icons/server.svg');
+        }
+        
+        .icon-settings {
+            background-image: url('/static/icons/settings.svg');
+        }
+        
+        .icon-wifi {
+            background-image: url('/static/icons/wifi.svg');
+        }
+        
+        .icon-apps {
+            background-image: url('/static/icons/apps.svg');
+        }
+        
+        .icon-close-circle {
+            background-image: url('/static/icons/close-circle.svg');
+        }
+        
+        .icon-bluetooth {
+            background-image: url('/static/icons/bluetooth.svg');
+        }

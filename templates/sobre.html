@@ -1,7 +1,68 @@
-{% args titulo, appname %}
+{% args titulo, appname, modo %}
 <html>
 {% include 'head.html' %}
 <body>
-{% include 'top_bar.html' %}
-</body>
-</html>
+  {% include 'top_bar.html' %}
+  <div class="w3-content w3-padding">
+         <div class="w3-card-4 w3-margin w3-white">
+             <header class="w3-container w3-blue">
+                 <h1>Micro SO para Microcontroladores en MicroPython</h1>
+             </header>
+
+             <div class="w3-container w3-padding">
+                 <p><strong>Objetivo del Proyecto:</strong> El proyecto tiene como objetivo desarrollar un sistema operativo ligero (Micro SO) para microcontroladores como el ESP32, Raspberry Pi Pico, y otros similares, utilizando MicroPython como lenguaje de programación principal. Este Micro SO está orientado a funcionar como un sistema "kiosk", permitiendo la instalación y gestión de aplicaciones o programas a través de una API servidor.</p>
+
+                 <h3>Características Principales:</h3>
+                 <ul class="w3-ul w3-border">
+                     <li>
+                         <strong>Lenguaje y Entorno:</strong>
+                         <ul>
+                             <li><strong>MicroPython:</strong> El sistema está desarrollado en MicroPython, un lenguaje que adapta Python para funcionar en microcontroladores, lo que permite una programación más sencilla y eficiente en hardware de recursos limitados.</li>
+                             <li><strong>Microdot:</strong> Se utiliza Microdot, un microframework inspirado en Flask, para manejar las operaciones de red y servir la API que permitirá la instalación y gestión de las aplicaciones.</li>
+                         </ul>
+                     </li>
+                     <li>
+                         <strong>Compatibilidad con Hardware:</strong>
+                         <ul>
+                             <li><strong>ESP32, Raspberry Pi Pico, y Otros Microcontroladores:</strong> El sistema está diseñado para ser compatible con una variedad de microcontroladores populares en proyectos de IoT, facilitando su implementación en diferentes dispositivos con recursos de hardware limitados.</li>
+                         </ul>
+                     </li>
+                     <li>
+                         <strong>Sistema Kiosk:</strong> El Micro SO actúa como un sistema kiosk, proporcionando una interfaz simplificada y controlada para los usuarios finales. El objetivo es ofrecer una experiencia de uso cerrada, donde las aplicaciones se ejecuten de manera controlada y sin acceso directo al sistema subyacente.</li>
+                     <li>
+                         <strong>Gestión de Aplicaciones:</strong>
+                         <ul>
+                             <li><strong>Instalación y Actualización vía API:</strong> Las aplicaciones y programas se pueden instalar y actualizar a través de una API servidor, lo que permite la gestión remota de las aplicaciones sin necesidad de intervención física en el dispositivo.</li>
+                             <li><strong>Repositorio Centralizado:</strong> Los programas y aplicaciones compatibles se almacenan en un servidor centralizado, desde donde se pueden descargar e instalar en los dispositivos que ejecutan el Micro SO.</li>
+                         </ul>
+                     </li>
+                     <li>
+                         <strong>Seguridad y Control:</strong>
+                         <ul>
+                             <li><strong>Aislamiento de Aplicaciones:</strong> Cada aplicación se ejecuta en un entorno controlado para evitar que interfiera con el sistema o con otras aplicaciones, asegurando así la estabilidad y seguridad del Micro SO.</li>
+                             <li><strong>Actualizaciones Seguras:</strong> El sistema implementa un mecanismo para verificar la integridad de las aplicaciones antes de su instalación o actualización, garantizando que solo se ejecuten software seguros y aprobados.</li>
+                         </ul>
+                     </li>
+                 </ul>
+
+                 <h3>Aplicaciones del Proyecto:</h3>
+                 <p>Este Micro SO es ideal para:</p>
+                 <ul class="w3-ul w3-border">
+                     <li><strong>IoT y Dispositivos Inteligentes:</strong> Implementación en dispositivos IoT donde se requiere una gestión sencilla y segura de las aplicaciones.</li>
+                     <li><strong>Entornos de Exposición o Puntos de Venta:</strong> Utilización en kiosks, terminales de autoservicio, y otros entornos donde se necesita una interfaz limitada y controlada para el usuario final.</li>
+                 </ul>
+
+                 <h3>Futuras Expansiones:</h3>
+                 <ul class="w3-ul w3-border">
+                     <li><strong>Soporte para más Hardware:</strong> Ampliar la compatibilidad a otros microcontroladores y sistemas embebidos.</li>
+                     <li><strong>Interfaz de Usuario:</strong> Desarrollo de una interfaz gráfica ligera para facilitar la interacción del usuario con el sistema y las aplicaciones instaladas.</li>
+                 </ul>
+             </div>
+
+             <footer class="w3-container w3-blue">
+                 <h5>Micro SO para Microcontroladores - Proyecto Innovador en MicroPython</h5>
+             </footer>
+         </div>
+     </div>
+  </body>
+  </html>

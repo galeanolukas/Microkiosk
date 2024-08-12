@@ -1,26 +1,36 @@
 from microdot import Microdot, Response, redirect, send_file
 from microdot_utemplate import render_template
+# from microdot_static import Static
 import network
 import json
 import machine, os, gc
 
 app = Microdot()
 Response.default_content_type = 'text/html'
+# app.mount('/static', Static('./static'))
 lista_apps = []
 
 #Cargar las apps desde el dir apps
 def load_apps():
-    for app_item in os.listdir("apps"):
-        if app_item == "__init__.py" or app_item == "__pycache__":
+    f = open('config.json', 'r')
+    config = json.load(f)
+    f.close()
+    for app_dir in os.listdir("apps"):
+        if app_dir == "__init__.py" or app_dir == "__pycache__":
             pass
         else:
-            lista_apps.append(app_item.replace('.py', ''))
+            lista_apps.append(app_dir)
             
+    f = open('config.json', 'w')
+    config["apps"] = lista_apps   
+    json.dump(config, f)
+    f.close()
+    
     return lista_apps
 
 #funcion que importa los modulos instalados
 def import_modules(path):
-    with open(f'apps/{path}.py') as f:
+    with open(f'apps/{path}/{path}.py') as f:
         code = f.read()
         exec(code)
         
@@ -48,7 +58,10 @@ def home(request):
 
 @app.route('/sobre')
 def sobre(request):
-    return render_template('sobre.html', appname="SOBRE", titulo="SOBRE")
+    f = open('config.json', 'r')
+    config = json.load(f)
+    f.close()
+    return render_template('sobre.html', appname="SOBRE", titulo="SOBRE", modo=config["wifi"]["modo"])
 
 @app.route('/static/<path:path>')
 def static(request, path):
@@ -57,20 +70,36 @@ def static(request, path):
         return 'Not found', 404
     return send_file('static/' + path)
 
-@app.route('/static/icons/<path:path>')
-def icons(request, path):
-    if '..' in path:
-        # directory traversal is not allowed
-        return 'Not found', 404
-        
-    return send_file('static/icons/' + path)
+# @app.route('/static/icons/<path:path>')
+# def icons(request, path):
+#     if '..' in path:
+#         # directory traversal is not allowed
+#         return 'Not found', 404
+#         
+#     return send_file('static/icons/' + path)
 
-@app.route('/appsm', methods=["GET", "POST"])
+@app.route('/static/icons/<filename>')
+def serve_svg(request, filename):
+    file_path = os.path.join("static/icons/", filename)
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as f:
+            content = f.read()
+        return Response(content, content_type='image/svg+xml')
+    else:
+        return 'File not found', 404
+
+@app.route('/appm', methods=["GET", "POST"])
 def app_manager(request):
+    f = open('config.json', 'r')
+    config = json.load(f)
     if request.method == "POST":
         pass
     
-    return render_template('appmanager.html')
+    return render_template('appmanager.html',
+                           titulo="APPMANAGER",
+                           appname="APPS MANAGER",
+                           modo=config["wifi"]["modo"],
+                           apps=config["apps"])
 
 @app.route('/reiniciar', methods=["POST"])
 def desconect(request):
