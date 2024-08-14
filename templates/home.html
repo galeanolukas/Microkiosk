@@ -1,4 +1,4 @@
-{% args titulo, modo, apps %}
+{% args titulo, modo, apps, board %}
 <!DOCTYPE html>
 <html>
 {% include 'head.html' %}
@@ -6,62 +6,38 @@
 
 <!-- Sidebar -->
 <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none; width:250px;" id="mySidebar">
-  <button class="w3-bar-item w3-button w3-large w3-right" onclick="w3_close()">Close &times;</button>
+  <button class="w3-bar-item w3-button w3-large w3-right" onclick="w3_close()">{{ board }}</button>
   {% for app in apps %}
-  <a href="/{{ app }}/" class="w3-bar-item w3-button w3-hover-blue">{{ app }}</a>
+  <div class="w3-bar-item w3-center">
+   <a href="/{{ app }}/" class="w3-bar-item w3-button w3-hover-blue">{{ app }}</a>
+  </div>
   {% endfor %}
 </div>
-
 <!-- Top bar -->
 <div class="w3-top">
   <div class="w3-bar w3-blue w3-padding w3-card" style="letter-spacing:4px;" id="main">
     <a id="openNav" onclick="w3_open()" class="w3-bar-item w3-button w3-hover-blue">
-      <h2>MICROKIOSK</h2>
+    <h2>MICROKIOSK</h2>
     </a>
-
     <!-- Right-sided navbar links -->
-    <div class="w3-right w3-hide-small" style="font-size:2em;">
+    <div class="w3-right w3-hide-small" style="font-size:4em;">
       <a href="/" class="w3-bar-item w3-button w3-hover-blue">
-        {% if modo == 'ap' %}
-        <div class="icon-home"></div>
-        {% else %}
         <ion-icon name="home-sharp"></ion-icon>
-        {% endif %}
       </a>
       <a href="/wifi" class="w3-bar-item w3-button w3-hover-blue">
-        {% if modo == 'ap' %}
-        <img src="static/icons/wifi.svg" style="width: 1.5em; height: 1.5em;"/>
-        {% else %}
         <ion-icon name="wifi-outline"></ion-icon>
-        {% endif %}
       </a>
-      <a href="/" class="w3-bar-item w3-button w3-hover-blue">
-        {% if modo == 'ap' %}
-        <img src="static/icons/bluetooth.svg" style="width: 1.5em; height: 1.5em;"/>
-        {% else %}
+      <a href="/bt" class="w3-bar-item w3-button w3-hover-blue">
         <ion-icon name="bluetooth-sharp"></ion-icon>
-        {% endif %}
       </a>
       <a href="/sobre" class="w3-bar-item w3-button w3-hover-blue">
-        {% if modo == 'ap' %}
-        <img src="static/icons/information-circle.svg" style="width: 1.5em; height: 1.5em;"/>
-        {% else %}
         <ion-icon name="information-circle"></ion-icon>
-        {% endif %}
-      </a>
-      <a href="/reiniciar" class="w3-bar-item w3-button w3-hover-blue">
-        {% if modo == 'ap' %}
-        <img src="static/icons/reload-circle.svg" style="width: 1.5em; height: 1.5em;"/>
-        {% else %}
-        <ion-icon name="reload-circle"></ion-icon>
-        {% endif %}
       </a>
       <a href="/appm" class="w3-bar-item w3-button w3-hover-blue">
-        {% if modo == 'ap' %}
-        <img src="static/icons/reload-circle.svg" style="width: 1.5em; height: 1.5em;"/>
-        {% else %}
         <ion-icon name="logo-apple-appstore"></ion-icon>
-        {% endif %}
+      </a>
+      <a href="/reiniciar" class="w3-bar-item w3-button w3-hover-blue">
+        <ion-icon name="reload-circle"></ion-icon>
       </a>
     </div>
   </div>

@@ -1,31 +1,46 @@
 from microdot import Microdot, Response, redirect, send_file
 from microdot_utemplate import render_template
 # from microdot_static import Static
+import bluetooth
 import network
 import json
-import machine, os, gc
+import machine, os, gc, sys
 
 app = Microdot()
 Response.default_content_type = 'text/html'
 # app.mount('/static', Static('./static'))
+
+# Inicializa Bluetooth
+#ble = bluetooth.BLE()
+#ble.active(True)
+
 lista_apps = []
+
+# funcion que carga la configuracion
+def load_config():
+    try:
+        with open('config.json', 'r') as f:
+            return json.load(f)
+    except OSError:
+        return {}
+    
+def save_config(config):
+    with open('config.json', 'w') as f:
+        json.dump(config, f)
+
 
 #Cargar las apps desde el dir apps
 def load_apps():
-    f = open('config.json', 'r')
-    config = json.load(f)
-    f.close()
+    config = load_config()
     for app_dir in os.listdir("apps"):
         if app_dir == "__init__.py" or app_dir == "__pycache__":
             pass
         else:
             lista_apps.append(app_dir)
             
-    f = open('config.json', 'w')
-    config["apps"] = lista_apps   
-    json.dump(config, f)
-    f.close()
-    
+    config["apps"] = lista_apps
+    save_config(config)
+
     return lista_apps
 
 #funcion que importa los modulos instalados
@@ -48,19 +63,17 @@ def install_apps(current_app):
                                
 @app.route('/')
 def home(request):
-    f = open('config.json', 'r')
-    config = json.load(f)
-    f.close()
+    config = load_config()
+    board = sys.platform
     return render_template('home.html',
                             titulo="KIOSK HOME",
                             modo=config["wifi"]["modo"],
-                            apps=lista_apps)
+                            apps=lista_apps,
+                            board=board.upper())
 
 @app.route('/sobre')
 def sobre(request):
-    f = open('config.json', 'r')
-    config = json.load(f)
-    f.close()
+    config = load_config()
     return render_template('sobre.html', appname="SOBRE", titulo="SOBRE", modo=config["wifi"]["modo"])
 
 @app.route('/static/<path:path>')
@@ -78,7 +91,7 @@ def static(request, path):
 #         
 #     return send_file('static/icons/' + path)
 
-@app.route('/static/icons/<filename>')
+@app.route('/static/icons/<filename>', methods=["GET"])
 def serve_svg(request, filename):
     file_path = os.path.join("static/icons/", filename)
     if os.path.exists(file_path):
@@ -90,8 +103,7 @@ def serve_svg(request, filename):
 
 @app.route('/appm', methods=["GET", "POST"])
 def app_manager(request):
-    f = open('config.json', 'r')
-    config = json.load(f)
+    config = load_config()
     if request.method == "POST":
         pass
     
@@ -106,6 +118,14 @@ def desconect(request):
     if request.method == "POST":
         machine.reset()
         return redirect('/')
+
+@app.route('/bt', methods=["GET", "POST"])
+def blue(request):
+    config = load_config()
+    return render_template('bt.html',
+                           bt=config["bt"]["active"],
+                           modo=config["wifi"]["modo"],
+                           appname="BLUETOOTH MANAGER", titulo="")
         
 @app.route('/wifi', methods=["GET", "POST"])
 def wifi_conect(request):
@@ -117,13 +137,12 @@ def wifi_conect(request):
                    "password":None,
                    "modo":"ap",
                    "ip":"",
-                   "appname":"CONECTAR A RED"}
+                   "appname":"WIFI MANAGER"}
         
     config = None
         
     try:
-        config = open("config.json")
-        config = json.load(config)
+        config = load_config()
             
     except OSError:
         pass
@@ -138,9 +157,7 @@ def wifi_conect(request):
             config["wifi"]["password"] = psk
             config["wifi"]["modo"] = modo
             config["wifi"]["ip"] = ip
-            f = open("config.json", "w")
-            json.dump(config, f)
-            f.close()
+            save_config(config)
             machine.reset()
             return redirect('/')
         else:
