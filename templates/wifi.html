@@ -1,57 +1,70 @@
-{% args msj, ssid, password, appname, modo, titulo, ip %}
+{% args msj, ssid, password, appname, modo, redes, titulo, ip %}
 <!DOCTYPE html>
 <html>
 {% include 'head.html' %}
 <body>
   {% include 'top_bar.html' %}
-
-  <div class="w3-container w3-padding-large w3-center w3-animate-top w3-margin-top">
-    <div class="w3-card w3-round w3-white w3-padding-32" style="max-width: 500px; margin: auto;">
-      <p style="font-size:4em;"><ion-icon name="wifi-outline"></ion-icon></p>
-
-      {% if msj %}
-        <p class="w3-text-red w3-large">{{ msj }}</p>
-      {% endif %}
-
-      <form class="w3-container" method="POST">
-        <div class="w3-section">
-          <label for="essid">Essid/Usuario</label>
-          <input class="w3-input w3-border w3-round" id="essid" name="essid" placeholder="USUARIO/ESSID" value="{{ ssid }}" type="text">
+  <div class="w3-container w3-padding-large w3-center w3-margin-top">
+    <div class="w3-row">
+      <div class="w3-container w3-animate-bottom w3-half">
+        {% if redes %}
+        <ul class="w3-ul w3-hoverable">
+          {% for red in redes %}
+          <li><a href="/wifi?n={{ red }}">{{ red }}</a></li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p style="font-size:4em;"><ion-icon name="wifi-outline"></ion-icon></p>
+        {% endif %}
+        <a href="" class="w3-button w3-large w3-center w3-teal">BUSCAR</a>
+      </div>
+      <div class="w3-container w3-animate-top w3-half">
+        {% if msj %}
+        <div class="w3-panel w3-red">
+          <h3>Error!</h3>
+          <p>{{ msj }}</p>
         </div>
+        {% endif %}
+        <form class="w3-container" method="POST">
+          <div class="w3-section">
+            <label for="essid">Essid/Usuario</label>
+            <input class="w3-input w3-border w3-round" id="essid" name="essid" placeholder="USUARIO/ESSID" value="{{ ssid }}" type="text">
+          </div>
 
-        <div class="w3-section">
-          <label for="passInput">Password/Contraseña</label>
-          <input class="w3-input w3-border w3-round" id="passInput" name="password" placeholder="PASSWORD" value="{{ password }}" type="password">
-          <input class="w3-check" type="checkbox" onclick="myFunction()"> Ver Password
-        </div>
+          <div class="w3-section">
+            <label for="passInput">Password/Contraseña</label>
+            <input class="w3-input w3-border w3-round" id="passInput" name="password" placeholder="PASSWORD" value="{{ password }}" type="password">
+            <input class="w3-check" type="checkbox" onclick="myFunction()"> Ver Password
+          </div>
 
-        <div class="w3-section">
-          <label for="modo">Modo</label>
-          <select class="w3-select w3-border w3-round" name="modo" id="modo">
-            <option value="ap" {% if modo == "ap" %}selected{% endif %}>Punto de Acceso (AP)</option>
-            <option value="st" {% if modo == "st" %}selected{% endif %}>Conectarse a Red (ST)</option>
-          </select>
-        </div>
+          <div class="w3-section">
+            <label for="modo">Modo</label>
+            <select class="w3-select w3-border w3-round" name="modo" id="modo">
+              <option value="ap" {% if modo == "ap" %}selected{% endif %}>Punto de Acceso (AP)</option>
+              <option value="st" {% if modo == "st" %}selected{% endif %}>Conectarse a Red (ST)</option>
+            </select>
+          </div>
 
-        <div class="w3-section">
-          <label for="ip">Fijar IP</label>
-          <input class="w3-input w3-border w3-round" id="ip" name="ip" placeholder="FIJAR IP" value="{{ ip }}" type="text">
-        </div>
+          <div class="w3-section">
+            <label for="ip">Fijar IP</label>
+            <input class="w3-input w3-border w3-round" id="ip" name="ip" placeholder="FIJAR IP" value="{{ ip }}" type="text">
+          </div>
 
-        <button class="w3-button w3-block w3-teal w3-round-large w3-margin-top" type="submit">CONECTAR</button>
-      </form>
+          <button class="w3-button w3-block w3-teal w3-round-large w3-margin-top" type="submit">CONECTAR</button>
+        </form>
+      </div>
     </div>
   </div>
 
   <script>
-    function myFunction() {
-      var x = document.getElementById("passInput");
-      if (x.type === "password") {
-        x.type = "text";
-      } else {
-        x.type = "password";
-      }
+  function myFunction() {
+    var x = document.getElementById("passInput");
+    if (x.type === "password") {
+      x.type = "text";
+    } else {
+      x.type = "password";
     }
+  }
   </script>
 
   {% include "footer.html" %}

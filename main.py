@@ -16,6 +16,16 @@ Response.default_content_type = 'text/html'
 
 lista_apps = []
 
+def scan_wifi():
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    networks = wlan.scan()  # Devuelve una lista de tuplas con la información de las redes
+    wifi_list = []
+    for net in networks:
+        wifi_list.append(net[0].decode('utf-8'))
+        
+    return wifi_list
+
 # funcion que carga la configuracion
 def load_config():
     try:
@@ -66,7 +76,7 @@ def home(request):
     config = load_config()
     board = sys.platform
     return render_template('home.html',
-                            titulo="KIOSK HOME",
+                            titulo="MICROKIOSK",
                             modo=config["wifi"]["modo"],
                             apps=lista_apps,
                             board=board.upper())
@@ -81,25 +91,19 @@ def static(request, path):
     if '..' in path:
         # directory traversal is not allowed
         return 'Not found', 404
+    
     return send_file('static/' + path)
-
+# 
 # @app.route('/static/icons/<path:path>')
-# def icons(request, path):
-#     if '..' in path:
-#         # directory traversal is not allowed
-#         return 'Not found', 404
-#         
-#     return send_file('static/icons/' + path)
-
-@app.route('/static/icons/<filename>', methods=["GET"])
-def serve_svg(request, filename):
-    file_path = os.path.join("static/icons/", filename)
-    if os.path.exists(file_path):
-        with open(file_path, 'rb') as f:
-            content = f.read()
-        return Response(content, content_type='image/svg+xml')
-    else:
-        return 'File not found', 404
+# def serve_svg(request, path):
+#     file_path = os.path.join("static/icons/", path)
+#     print(file_path)
+#     if os.path.exists(file_path):
+#         with open(file_path, 'rb') as f:
+#             content = f.read()
+#         return Response(content, content_type='image/svg+xml')
+#     else:
+#         return 'File not found', 404
 
 @app.route('/appm', methods=["GET", "POST"])
 def app_manager(request):
@@ -122,6 +126,10 @@ def desconect(request):
 @app.route('/bt', methods=["GET", "POST"])
 def blue(request):
     config = load_config()
+    
+    if request.nethod == "POST":
+        pass
+        
     return render_template('bt.html',
                            bt=config["bt"]["active"],
                            modo=config["wifi"]["modo"],
@@ -129,8 +137,8 @@ def blue(request):
         
 @app.route('/wifi', methods=["GET", "POST"])
 def wifi_conect(request):
-    redes = []
-            
+    redes = scan_wifi()
+    
     context = {"name":None,
                    "msj":None,
                    "ssid":None,
@@ -177,6 +185,7 @@ def wifi_conect(request):
                             appname=context["appname"],
                             modo=context["modo"],
                             password=context["password"],
+                            redes=redes,
                             ip=context["ip"])
 
 if __name__ == '__main__':

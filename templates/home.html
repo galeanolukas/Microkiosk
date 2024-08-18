@@ -3,84 +3,101 @@
 <html>
 {% include 'head.html' %}
 <body>
-
-<!-- Sidebar -->
-<div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none; width:250px;" id="mySidebar">
-  <button class="w3-bar-item w3-button w3-large w3-right" onclick="w3_close()">{{ board }}</button>
-  {% for app in apps %}
-  <div class="w3-bar-item w3-center">
-   <a href="/{{ app }}/" class="w3-bar-item w3-button w3-hover-blue">{{ app }}</a>
+  <!-- Sidebar -->
+  <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none; width:250px;" id="mySidebar">
+    <button class="w3-bar-item w3-button w3-large w3-right" onclick="w3_close()">{{ board }}</button>
+    {% for app in apps %}
+    <div class="w3-bar-item w3-center">
+      <a href="/{{ app }}/" class="w3-bar-item w3-button w3-hover-blue">{{ app }}</a>
+    </div>
+    {% endfor %}
   </div>
-  {% endfor %}
-</div>
-<!-- Top bar -->
-<div class="w3-top">
-  <div class="w3-bar w3-blue w3-padding w3-card" style="letter-spacing:4px;" id="main">
+  <!-- Top bar -->
+  <div class="w3-bar w3-blue w3-padding" style="letter-spacing:4px; font-size:3em;" id="main">
     <a id="openNav" onclick="w3_open()" class="w3-bar-item w3-button w3-hover-blue">
-    <h2>MICROKIOSK</h2>
+      {% if modo == "ap" %}
+      <div class="icons-apps"></div>
+      {% else %}
+      <ion-icon name="apps-outline"></ion-icon>
+      {% endif %}
     </a>
+    <div class="w3-bar-item w3-button"><h2>{{ titulo }}</h2></div>
     <!-- Right-sided navbar links -->
-    <div class="w3-right w3-hide-small" style="font-size:4em;">
-      <a href="/" class="w3-bar-item w3-button w3-hover-blue">
-        <ion-icon name="home-sharp"></ion-icon>
-      </a>
-      <a href="/wifi" class="w3-bar-item w3-button w3-hover-blue">
-        <ion-icon name="wifi-outline"></ion-icon>
-      </a>
-      <a href="/bt" class="w3-bar-item w3-button w3-hover-blue">
-        <ion-icon name="bluetooth-sharp"></ion-icon>
-      </a>
-      <a href="/sobre" class="w3-bar-item w3-button w3-hover-blue">
-        <ion-icon name="information-circle"></ion-icon>
-      </a>
-      <a href="/appm" class="w3-bar-item w3-button w3-hover-blue">
-        <ion-icon name="logo-apple-appstore"></ion-icon>
-      </a>
-      <a href="/reiniciar" class="w3-bar-item w3-button w3-hover-blue">
-        <ion-icon name="reload-circle"></ion-icon>
-      </a>
+    <a href="/reiniciar" class="w3-bar-item w3-button w3-hover-gray w3-right">
+      {% if modo == "ap" %}
+      <span class="icon-reload-circle"></span>
+      {% else %}
+      <ion-icon name="reload-circle"></ion-icon>
+      {% endif %}
+    </a>
+    <a href="/appm" class="w3-bar-item w3-button w3-hover-gray w3-right">
+      {% if modo == "ap" %}
+      <span class="icon-apps"></span>
+      {% else %}
+      <ion-icon name="apps-outline"></ion-icon>
+      {% endif %}
+    </a>
+    <a href="/sobre" class="w3-bar-item w3-button w3-hover-gray w3-right">
+      {% if modo == "ap" %}
+      <span class="icon-alert-circle"></span>
+      {% else %}
+      <ion-icon name="information-circle"></ion-icon>
+      {% endif %}
+    </a>
+    <a href="/bt" class="w3-bar-item w3-button w3-hover-gray w3-right">
+      {% if modo == "ap" %}
+      <span class="icon-bluetooth"></span>
+      {% else %}
+      <ion-icon name="bluetooth-sharp"></ion-icon>
+      {% endif %}
+    </a>
+    <a href="/wifi" class="w3-bar-item w3-button w3-hover-gray w3-right">
+      <ion-icon name="wifi-outline"></ion-icon>
+    </a>
+    <a href="/" class="w3-bar-item w3-button w3-hover-gray w3-right">
+      <ion-icon name="home-sharp"></ion-icon>
+    </a>
+  </div>
+  <!-- Main content -->
+  <div class="w3-container w3-center w3-animate-top w3-margin-top">
+  <div class="w3-row">
+    <div class="w3-container w3-threequarter">
+      <h2><ion-icon name="heart-circle-outline"></ion-icon> FAVORITOS</h2>
+      <!-- Card example -->
+      <div class="w3-card-4">
+        <header class="w3-container w3-blue">
+          <h1>Agrega tus apps</h1>
+        </header>
+
+        <div class="w3-container">
+          <p>Lorem ipsum...</p>
+        </div>
+
+        <footer class="w3-container w3-blue">
+          <h5>By Lukas</h5>
+        </footer>
+
+      </div>
+    </div>
+    <div class="w3-container w3-quarter">
+      <h2>w3-quarter</h2>
     </div>
   </div>
-</div>
-
-<!-- Main content -->
-<div class="w3-container w3-center w3-animate-top w3-margin-top">
-  <h1>KIOSKO VIRTUAL</h1>
-  <p style="font-size:4em;"><ion-icon name="heart-circle-outline"></ion-icon></p>
-  <h2>FAVORITOS</h2>
-
-  <!-- Card example -->
-  <div class="w3-card-4 w3-margin-top" style="max-width: 400px; margin: auto;">
-    <header class="w3-container w3-light-grey">
-      <h3>John Doe</h3>
-    </header>
-    <div class="w3-container">
-      <p>1 new friend request</p>
-      <hr>
-      <img src="img_avatar3.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width: 60px;">
-      <p>President/CEO at Mighty Schools...</p>
-    </div>
-    <button class="w3-button w3-block w3-dark-grey w3-round">+ Connect</button>
   </div>
-</div>
+  <script>
+  function w3_open() {
+    document.getElementById("main").style.marginLeft = "250px";
+    document.getElementById("mySidebar").style.width = "250px";
+    document.getElementById("mySidebar").style.display = "block";
+    document.getElementById("openNav").style.display = 'none';
+  }
 
-{% include "footer.html" %}
-
-<!-- Sidebar toggle script -->
-<script>
-function w3_open() {
-  document.getElementById("main").style.marginLeft = "250px";
-  document.getElementById("mySidebar").style.width = "250px";
-  document.getElementById("mySidebar").style.display = "block";
-  document.getElementById("openNav").style.display = 'none';
-}
-
-function w3_close() {
-  document.getElementById("main").style.marginLeft = "0";
-  document.getElementById("mySidebar").style.display = "none";
-  document.getElementById("openNav").style.display = "inline-block";
-}
+  function w3_close() {
+    document.getElementById("main").style.marginLeft = "0";
+    document.getElementById("mySidebar").style.display = "none";
+    document.getElementById("openNav").style.display = "inline-block";
+  }
 </script>
-
+{% include "footer.html" %}
 </body>
 </html>

@@ -1,46 +1,55 @@
         .icon {
-            width: 24px;
-            height: 24px;
+            width: 45px;
+            height: 45px;
             background-size: contain;
             background-repeat: no-repeat;
         }
         
         .icon-alert-circle {
-            background-image: url('/static/icons/alert-circle.svg');
+            background-image: url('/static/icons/alert-circle.png');
         }
         
         .icon-home {
-            background-image: url('/static/icons/home.svg');
+            background-image: url('/static/icons/home.png');
         }
         
         .icon-reload-circle {
-            background-image: url('/static/icons/alert-reload.svg');
+            background-image: url('/static/icons/alert-reload.png');
         }
         
         .icon-close {
-            background-image: url('/static/icons/close.svg');
+            background-image: url('/static/icons/close.png');
         }
         
         .icon-server {
-            background-image: url('/static/icons/server.svg');
+            background-image: url('/static/icons/server.png');
         }
         
         .icon-settings {
-            background-image: url('/static/icons/settings.svg');
+            background-image: url('/static/icons/settings.png');
         }
         
         .icon-wifi {
-            background-image: url('/static/icons/wifi.svg');
+            background-image: url('/static/icons/wifi.png');
+        }
+
+        .icon-bluetooth {
+            background-image: url('/static/icons/bluetooth.png');
         }
         
         .icon-apps {
-            background-image: url('/static/icons/apps.svg');
+            background-image: url('/static/icons/apps.png');
         }
         
         .icon-close-circle {
-            background-image: url('/static/icons/close-circle.svg');
+            background-image: url('/static/icons/close-circle.png');
         }
         
         .icon-bluetooth {
-            background-image: url('/static/icons/bluetooth.svg');
+            background-image: url('/static/icons/bluetooth.png');
         }
+        
+        .icon-logo-github {
+            background-image: url('/static/icons/logo-github.png');
+        }
+        
