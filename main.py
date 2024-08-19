@@ -16,6 +16,11 @@ Response.default_content_type = 'text/html'
 
 lista_apps = []
 
+def get_mem():
+    s = os.statvfs('//')
+    mem = s[0] * s[3]
+    return mem / 1048576
+
 def scan_wifi():
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
@@ -75,10 +80,15 @@ def install_apps(current_app):
 def home(request):
     config = load_config()
     board = sys.platform
+    memoria = get_mem()
+    mem_perc = memoria * 4 / 100
     return render_template('home.html',
                             titulo="MICROKIOSK",
                             modo=config["wifi"]["modo"],
+                            appname="HOME",
                             apps=lista_apps,
+                            mem=memoria,
+                            mem_perc=mem_perc,
                             board=board.upper())
 
 @app.route('/sobre')

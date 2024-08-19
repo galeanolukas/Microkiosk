@@ -49,7 +49,6 @@ def do_connect(SSID, SSI_PASSWORD):
         blink()
         while not sta_if.isconnected():
             blink(False)
-            pass
         
     print('Conectado! Red Wifi:', sta_if.ifconfig())
     

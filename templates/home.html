@@ -1,4 +1,4 @@
-{% args titulo, modo, apps, board %}
+{% args appname, titulo, modo, apps, board, mem, mem_perc %}
 <!DOCTYPE html>
 <html>
 {% include 'head.html' %}
@@ -60,44 +60,41 @@
   </div>
   <!-- Main content -->
   <div class="w3-container w3-center w3-animate-top w3-margin-top">
-  <div class="w3-row">
-    <div class="w3-container w3-threequarter">
-      <h2><ion-icon name="heart-circle-outline"></ion-icon> FAVORITOS</h2>
-      <!-- Card example -->
-      <div class="w3-card-4">
-        <header class="w3-container w3-blue">
-          <h1>Agrega tus apps</h1>
-        </header>
+    <div class="w3-row-padding w3-margin-bottom">
 
-        <div class="w3-container">
-          <p>Lorem ipsum...</p>
+      <div class="w3-quarter">
+        <div class="w3-container w3-red w3-padding-16">
+          <div class="w3-left"><i class="fas fa-comment w3-xxxlarge"></i></div>
+          <div class="w3-right"><h3>52</h3></div>
+          <div class="w3-clear"></div><h4>Messages</h4></div>
         </div>
 
-        <footer class="w3-container w3-blue">
-          <h5>By Lukas</h5>
-        </footer>
+      </div>
 
+      <div class="w3-container">
+        <h5>{{ board }} Stats</h5>
+        <p>Memoria (MB)</p>
+        <div class="w3-grey"><div class="w3-container w3-center w3-padding w3-green" style="width:{{ mem_perc }}%">+{{ mem }}%</div></div>
+        <p>Memoria</p>
+        <div class="w3-grey"><div class="w3-container w3-center w3-padding w3-orange" style="width:50%">3.5%</div></div>
+        <p>Bounce Rate</p>
+        <div class="w3-grey"><div class="w3-container w3-center w3-padding w3-red" style="width:89%">99%</div></div>
       </div>
     </div>
-    <div class="w3-container w3-quarter">
-      <h2>w3-quarter</h2>
-    </div>
-  </div>
-  </div>
-  <script>
-  function w3_open() {
-    document.getElementById("main").style.marginLeft = "250px";
-    document.getElementById("mySidebar").style.width = "250px";
-    document.getElementById("mySidebar").style.display = "block";
-    document.getElementById("openNav").style.display = 'none';
-  }
+    <script>
+    function w3_open() {
+      document.getElementById("main").style.marginLeft = "250px";
+      document.getElementById("mySidebar").style.width = "250px";
+      document.getElementById("mySidebar").style.display = "block";
+      document.getElementById("openNav").style.display = 'none';
+    }
 
-  function w3_close() {
-    document.getElementById("main").style.marginLeft = "0";
-    document.getElementById("mySidebar").style.display = "none";
-    document.getElementById("openNav").style.display = "inline-block";
-  }
-</script>
-{% include "footer.html" %}
+    function w3_close() {
+      document.getElementById("main").style.marginLeft = "0";
+      document.getElementById("mySidebar").style.display = "none";
+      document.getElementById("openNav").style.display = "inline-block";
+    }
+  </script>
+  {% include "footer.html" %}
 </body>
 </html>
