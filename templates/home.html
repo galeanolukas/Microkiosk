@@ -5,7 +5,7 @@
 <body>
   <!-- Sidebar -->
   <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none; width:250px;" id="mySidebar">
-    <button class="w3-bar-item w3-button w3-large w3-right" onclick="w3_close()">{{ board }}</button>
+    <button class="w3-bar-item w3-button w3-large w3-right" onclick="w3_close()">MENU<img src="static/icons/close.png" style="width:50px; float:inline-end"></button>
     {% for app in apps %}
     <div class="w3-bar-item w3-center">
       <a href="/{{ app }}/" class="w3-bar-item w3-button w3-hover-blue">{{ app }}</a>
@@ -13,49 +13,53 @@
     {% endfor %}
   </div>
   <!-- Top bar -->
-  <div class="w3-bar w3-blue w3-padding" style="letter-spacing:4px; font-size:3em;" id="main">
+  <div class="w3-bar w3-blue" style="letter-spacing:4px; font-size:3em;" id="main">
     <a id="openNav" onclick="w3_open()" class="w3-bar-item w3-button w3-hover-blue">
-      {% if modo == "ap" %}
-      <div class="icons-apps"></div>
-      {% else %}
-      <ion-icon name="apps-outline"></ion-icon>
-      {% endif %}
+      <img src="static/logo.png" style="width:50%;">
     </a>
     <div class="w3-bar-item w3-button"><h2>{{ titulo }}</h2></div>
     <!-- Right-sided navbar links -->
     <a href="/reiniciar" class="w3-bar-item w3-button w3-hover-gray w3-right">
       {% if modo == "ap" %}
-      <span class="icon-reload-circle"></span>
+      <button class="w3-button w3-large">Reset</button>
       {% else %}
       <ion-icon name="reload-circle"></ion-icon>
       {% endif %}
     </a>
-    <a href="/appm" class="w3-bar-item w3-button w3-hover-gray w3-right">
+    <a href="/appm" class="w3-bar-item w3-button w3-hover-light w3-right">
       {% if modo == "ap" %}
-      <span class="icon-apps"></span>
+      <button class="w3-button w3-large">AppMan</button>
       {% else %}
       <ion-icon name="apps-outline"></ion-icon>
       {% endif %}
     </a>
-    <a href="/sobre" class="w3-bar-item w3-button w3-hover-gray w3-right">
+    <a href="/sobre" class="w3-bar-item w3-button w3-hover-light w3-right">
       {% if modo == "ap" %}
-      <span class="icon-alert-circle"></span>
+      <button class="w3-button w3-large">Sobre</button>
       {% else %}
       <ion-icon name="information-circle"></ion-icon>
       {% endif %}
     </a>
-    <a href="/bt" class="w3-bar-item w3-button w3-hover-gray w3-right">
+    <a href="/bt" class="w3-bar-item w3-button w3-hover-light w3-right">
       {% if modo == "ap" %}
-      <span class="icon-bluetooth"></span>
+      <button class="w3-button w3-large">Bluetooth</button>
       {% else %}
       <ion-icon name="bluetooth-sharp"></ion-icon>
       {% endif %}
     </a>
-    <a href="/wifi" class="w3-bar-item w3-button w3-hover-gray w3-right">
+    <a href="/wifi" class="w3-bar-item w3-button w3-hover-light w3-right">
+      {% if modo == "ap" %}
+      <button class="w3-button w3-large">Wifi</button>
+      {% else %}
       <ion-icon name="wifi-outline"></ion-icon>
+      {% endif %}
     </a>
-    <a href="/" class="w3-bar-item w3-button w3-hover-gray w3-right">
+    <a href="/" class="w3-bar-item w3-button w3-hover-light w3-right">
+      {% if modo == "ap" %}
+      <button class="w3-button w3-large">Home</button>
+      {% else %}
       <ion-icon name="home-sharp"></ion-icon>
+      {% endif %}
     </a>
   </div>
   <!-- Main content -->
