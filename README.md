@@ -2,7 +2,7 @@
 
 ## 🧠 Objetivo del Proyecto
 
-Este proyecto tiene como objetivo desarrollar un sistema operativo ligero (**Micro SO**) para microcontroladores como el ESP32, Raspberry Pi Pico y otros similares, utilizando **MicroPython** como lenguaje de programación principal. 
+Este proyecto tiene como objetivo desarrollar un sistema operativo ligero (**Micro SO**) para microcontroladores como el ESP32, Raspberry Pi Pico y otros similares, utilizando **MicroPython** como lenguaje de programación principal.
 
 El sistema está orientado a funcionar como un entorno tipo **kiosk**, permitiendo la instalación y gestión de aplicaciones a través de una API tipo servidor.
 
