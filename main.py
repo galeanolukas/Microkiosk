@@ -103,17 +103,6 @@ def static(request, path):
         return 'Not found', 404
     
     return send_file('static/' + path)
-# 
-# @app.route('/static/icons/<path:path>')
-# def serve_svg(request, path):
-#     file_path = os.path.join("static/icons/", path)
-#     print(file_path)
-#     if os.path.exists(file_path):
-#         with open(file_path, 'rb') as f:
-#             content = f.read()
-#         return Response(content, content_type='image/svg+xml')
-#     else:
-#         return 'File not found', 404
 
 @app.route('/appm', methods=["GET", "POST"])
 def app_manager(request):
@@ -127,11 +116,18 @@ def app_manager(request):
                            modo=config["wifi"]["modo"],
                            apps=config["apps"])
 
-@app.route('/reiniciar', methods=["POST"])
-def desconect(request):
+@app.route('/reiniciar', methods=["GET", "POST"])
+def reiniciar(request):
     if request.method == "POST":
+        import time
+        time.sleep(1)
         machine.reset()
         return redirect('/')
+    
+    return render_template('reboot.html',
+                           appname="APAGAR PLACA",
+                           titulo="",
+                           modo=config["wifi"]["modo"])
 
 @app.route('/bt', methods=["GET", "POST"])
 def blue(request):
