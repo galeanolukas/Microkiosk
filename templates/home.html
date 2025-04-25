@@ -1,84 +1,85 @@
-{% args appname, titulo, modo, apps, board, mem, mem_perc %}
+{% args appname, titulo, modo, apps, board, mem, mem_perc, user %}
 <!DOCTYPE html>
 <html>
 {% include 'head.html' %}
 <body>
-
-<div class="w3-sidebar w3-bar-block w3-blue w3-card w3-animate-left" style="display:none; width:250px;" id="mySidebar">
-  <div class="w3-container w3-padding-16 w3-center w3-blue">
-    <button class="w3-button w3-white w3-round-large w3-margin-bottom" onclick="w3_close()">
-      <img src="static/icons/close.png" style="width:24px"> Cerrar
-    </button>
-  </div>
-  {% for app in apps %}
-    <a href="/{{ app }}/" class="w3-bar-item w3-center w3-button w3-hover-light-blue w3-large">{{ app }}</a>
-  {% endfor %}
-</div>
-
-<div class="w3-bar w3-blue w3-large" id="main">
-  <button id="openNav" class="w3-bar-item w3-button w3-blue w3-hover-light-blue" onclick="w3_open()">
-    <img src="static/logo.png" style="height:40px;">
-  </button>
-  <span class="w3-bar-item w3-xlarge w3-hide-small">{{ titulo }}</span>
-
-  <div class="w3-right">
-    <a href="/" class="w3-bar-item w3-button w3-hover-white">{% if modo == "ap" %}Home{% else %}<ion-icon name="home-sharp"></ion-icon>{% endif %}</a>
-    <a href="/wifi" class="w3-bar-item w3-button w3-hover-white">{% if modo == "ap" %}Wifi{% else %}<ion-icon name="wifi-outline"></ion-icon>{% endif %}</a>
-    <a href="/bt" class="w3-bar-item w3-button w3-hover-white">{% if modo == "ap" %}Bluetooth{% else %}<ion-icon name="bluetooth-sharp"></ion-icon>{% endif %}</a>
-    <a href="/sobre" class="w3-bar-item w3-button w3-hover-white">{% if modo == "ap" %}Sobre{% else %}<ion-icon name="information-circle"></ion-icon>{% endif %}</a>
-    <a href="/appm" class="w3-bar-item w3-button w3-hover-white">{% if modo == "ap" %}AppMan{% else %}<ion-icon name="apps-outline"></ion-icon>{% endif %}</a>
-    <a href="/reiniciar" class="w3-bar-item w3-button w3-hover-white">{% if modo == "ap" %}Reset{% else %}<ion-icon name="reload-circle"></ion-icon>{% endif %}</a>
-  </div>
-</div>
-
-<div class="w3-container w3-center w3-animate-top w3-padding-large">
-  <div class="w3-row-padding w3-margin-bottom">
-    <div class="w3-quarter">
-      <div class="w3-container w3-red w3-padding-16 w3-round-large w3-hover-shadow">
-        <div class="w3-left"><i class="fas fa-comment w3-xxxlarge"></i></div>
-        <div class="w3-right"><h3>52</h3></div>
-        <div class="w3-clear"></div>
-        <h4>Mensajes</h4>
+  {% include 'navbar.html' %}
+  {% include 'sidebar.html' %}
+  <main class="w3-content w3-padding w3-center">
+    <h5>{{ user }} / {{ board }}</h5>
+    {% if apps %}
+      {% for app in apps %}
+      <div class="w3-third w3-padding">
+        <a href="/{{ app }}" class="w3-card-4 w3-hover w3-white w3-round-large" style="text-decoration:none;">
+          <header class="w3-container w3-blue w3-round-top">
+            <h4 class="w3-margin-top">
+              <img src="static/micropython.png" style="height:24px; vertical-align:middle; margin-right:8px;">
+              {{ app }}
+            </h4>
+          </header>
+          <div class="w3-container w3-padding">
+            <p>Descripción de <strong>{{ app }}</strong></p>
+          </div>
+          <footer class="w3-container w3-light-grey w3-round-bottom">
+            <small class="w3-text-gray">Autor: desconocido</small>
+          </footer>
+        </a>
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="w3-third w3-padding">
+      <div class="w3-card-4 w3-white w3-round-large">
+        <header class="w3-container w3-blue w3-round-top">
+          <h4 class="w3-margin-top">
+            <img src="static/micropython.png" style="height:24px; vertical-align:middle; margin-right:8px;">
+            {{ app }}
+          </h4>
+        </header>
+        <div class="w3-container w3-padding">
+          <p>Descripción de <strong>{{ app }}</strong></p>
+        </div>
+        <footer class="w3-container w3-light-grey w3-round-bottom">
+          <small class="w3-text-gray">Autor: desconocido</small>
+        </footer>
       </div>
     </div>
-  </div>
+    {% endif %}
+      <div class="w3-container w3-padding">
+        <h5>{{ board }} HARDWARE</h5>
 
-  <div class="w3-container w3-padding">
-    <h5>{{ board }} Stats</h5>
+        <p>Memoria Disponible</p>
+        <div class="w3-grey w3-round">
+          <div class="w3-container w3-center w3-green w3-round" style="width:{{ mem_perc }}%">
+            {{ mem }}%
+          </div>
+        </div>
 
-    <p>Memoria Disponible</p>
-    <div class="w3-grey w3-round">
-      <div class="w3-container w3-center w3-green w3-round" style="width:{{ mem_perc }}%">
-        {{ mem }}%
+        <p>Uso Actual</p>
+        <div class="w3-grey w3-round">
+          <div class="w3-container w3-center w3-orange w3-round" style="width:50%">3.5%</div>
+        </div>
+
+        <p>Bounce Rate</p>
+        <div class="w3-grey w3-round">
+          <div class="w3-container w3-center w3-red w3-round" style="width:89%">99%</div>
+        </div>
       </div>
     </div>
 
-    <p>Uso Actual</p>
-    <div class="w3-grey w3-round">
-      <div class="w3-container w3-center w3-orange w3-round" style="width:50%">3.5%</div>
-    </div>
+    <script>
+    function w3_open() {
+      document.getElementById("main").style.marginLeft = "250px";
+      document.getElementById("mySidebar").style.display = "block";
+      document.getElementById("openNav").style.display = 'none';
+    }
 
-    <p>Bounce Rate</p>
-    <div class="w3-grey w3-round">
-      <div class="w3-container w3-center w3-red w3-round" style="width:89%">99%</div>
-    </div>
-  </div>
-</div>
-
-<script>
-  function w3_open() {
-    document.getElementById("main").style.marginLeft = "250px";
-    document.getElementById("mySidebar").style.display = "block";
-    document.getElementById("openNav").style.display = 'none';
-  }
-
-  function w3_close() {
-    document.getElementById("main").style.marginLeft = "0";
-    document.getElementById("mySidebar").style.display = "none";
-    document.getElementById("openNav").style.display = "inline-block";
-  }
-</script>
-
+    function w3_close() {
+      document.getElementById("main").style.marginLeft = "0";
+      document.getElementById("mySidebar").style.display = "none";
+      document.getElementById("openNav").style.display = "inline-block";
+    }
+  </script>
+</main>
 {% include "footer.html" %}
 </body>
 </html>

@@ -1,0 +1,31 @@
+{% args theme, port, debug, appname, modo %}
+<!DOCTYPE html>
+<html>
+{% include 'head.html' %}
+<body>
+  {% include 'top_bar.html' %}
+  <div class="w3-container w3-padding w3-center w3-margin">
+    <div class="w3-card-4 w3-white w3-round-large w3-padding">
+      <h3 class="w3-text-indigo">Configuración del sistema</h3>
+      <form method="post" class="w3-container w3-padding">
+        <label class="w3-margin-top">Puerto:</label>
+        <input type="number" name="port" value="{{ port }}" class="w3-input w3-border w3-margin">
+
+        <label class="w3-margin-top">Tema:</label>
+        <select name="theme" class="w3-select w3-border w3-margin">
+          <option value="light" {% if theme == 'light' %}selected{% endif %}>Claro</option>
+          <option value="dark" {% if theme == 'dark' %}selected{% endif %}>Oscuro</option>
+        </select>
+
+        <label class="w3-margin-top">
+          <input type="checkbox" name="debug" {% if debug == 'True' %}checked{% endif %} class="w3-margin">
+          Activar modo debug
+        </label>
+        <hr>
+        <br>
+        <button type="submit" class="w3-button w3-blue w3-round-large w3-margin-top">Guardar Cambios</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

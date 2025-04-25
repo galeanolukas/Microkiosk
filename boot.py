@@ -6,6 +6,7 @@ from machine import Pin
 import usocket
 import utime
 import os
+from config_manager import *
 
 # Replace the following with your WIFI Credentials
 lrgb_ob = Pin(2, Pin.OUT, value=0)
@@ -14,9 +15,10 @@ lrgb_ob.off()
 #SSID = "AP_ESP32"
 #SSI_PASSWORD = "G4l34n0L"
 
-config = None
-with open("config.json") as f:
-    config = json.load(f)
+config = read_config()
+
+#with open("config.json") as f:
+#    config = json.load(f)
     
 def blink(on=True):
     if on:
@@ -42,6 +44,9 @@ def do_ap_connect(SSID, SSI_PASSWORD):
 def do_connect(SSID, SSI_PASSWORD):
     import network
     sta_if = network.WLAN(network.STA_IF)
+    # IP fija: IP local, Gateway, Subnet mask, DNS
+    #sta_if.ifconfig((config["wifi"]["ip"], config["wifi"]["getway"], '255.255.255.0', '8.8.8.8'))
+    
     if not sta_if.isconnected():
         print('Conectando a la Red...')
         sta_if.active(True)

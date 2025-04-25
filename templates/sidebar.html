@@ -1,0 +1,30 @@
+<div class="w3-sidebar w3-bar-block w3-blue w3-card w3-animate-left" style="display:none; width:250px;" id="mySidebar">
+  <div class="w3-container w3-padding-16 w3-center w3-blue">
+    <button class="w3-button w3-white w3-right w3-margin-bottom" onclick="w3_close()">
+      <img src="static/icons/close.png" style="width:24px">
+    </button>
+  </div>
+  <a href="/wifi" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+    {% if modo == "st" %}<ion-icon name="wifi-outline"></ion-icon>{% endif %}
+    <span style="vertical-align: middle;">Wifi</span>
+  </a>
+  <a href="/bt" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+    {% if modo == "st" %}<ion-icon name="bluetooth-sharp"></ion-icon>{% endif %}
+    <span style="vertical-align: middle;">Bluetooth</span></a>
+  <a href="/appm" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+    {% if modo == "st" %}<ion-icon name="apps-outline"></ion-icon>{% endif %}
+    <span style="vertical-align: middle;">AppMan</span>
+  </a>
+  <a href="/config" class="w3-bar-item w3-button">
+    {% if modo == "st" %}<ion-icon name="settings-outline" style="vertical-align: middle;"></ion-icon>{% endif %}
+    <span style="vertical-align: middle;">Configuración</span>
+  </a>
+  <a href="/sobre" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+    {% if modo == "st" %}<ion-icon name="information-circle"></ion-icon>{% endif %}
+    <span style="vertical-align: middle;">Sobre</span>
+  </a>
+  <a href="/reiniciar" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+    {% if modo == "st" %}<ion-icon name="reload-circle"></ion-icon>{% endif %}
+    <span style="vertical-align: middle;">Reiniciar</span>
+  </a>
+</div>

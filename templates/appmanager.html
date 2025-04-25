@@ -4,7 +4,9 @@
 {% include 'head.html' %}
 <body>
   {% include 'top_bar.html' %}
+
   <div class="w3-container w3-padding-16 w3-center w3-animate-top">
+    <!-- Formulario para subir nueva app -->
     <div class="w3-card w3-round-large w3-padding-32 w3-margin-bottom w3-white w3-max-width">
       <h2 class="w3-text-indigo">Cargar Nueva App</h2>
       <form action="/upload" method="post" enctype="multipart/form-data" class="w3-row-padding w3-margin-top">
@@ -20,27 +22,39 @@
         </div>
       </form>
     </div>
-    <div class="w3-content w3-padding-16">
-      <ul class="w3-ul w3-card w3-round-large w3-white">
-        {% if apps %}
-          {% for app in apps %}
-          <li class="w3-bar w3-padding-16 w3-hover-shadow w3-border-bottom">
-            <span onclick="this.parentElement.style.display='none'" class="w3-bar-item w3-button w3-white w3-large w3-right w3-hover-red">×</span>
-            <img src="static/micropython.png" class="w3-bar-item w3-circle w3-hide-small" style="width:65px">
-            <div class="w3-bar-item">
-              <span class="w3-large w3-text-indigo">{{ app }}</span><br>
-              <span class="w3-small w3-text-gray">Descripción de {{ app }}</span>
+
+    <!-- Tarjetas de apps instaladas -->
+    <div class="w3-row-padding w3-padding-16 w3-content">
+      {% if apps %}
+        {% for app in apps %}
+        <div class="w3-third w3-padding">
+          <div class="w3-card-4 w3-white w3-round-large">
+            <header class="w3-container w3-blue w3-round-top">
+              <h4 class="w3-margin-top">
+                <img src="static/micropython.png" style="height:24px; vertical-align:middle; margin-right:8px;">
+                {{ app }}
+              </h4>
+            </header>
+            <div class="w3-container w3-padding">
+              <p>Descripción de <strong>{{ app }}</strong></p>
             </div>
-          </li>
-          {% endfor %}
-        {% else %}
-          <li class="w3-bar w3-padding-32">
-            <span class="w3-large w3-text-gray">No hay apps instaladas</span>
-          </li>
-        {% endif %}
-      </ul>
+            <footer class="w3-container w3-light-grey w3-round-bottom">
+              <small class="w3-text-gray">Autor: desconocido</small>
+            </footer>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="w3-col w3-padding-32">
+          <div class="w3-panel w3-pale-yellow w3-border w3-border-yellow w3-round-large">
+            <h4><ion-icon name="information-circle-outline"></ion-icon> Aviso</h4>
+            <p class="w3-text-gray">No hay aplicaciones instaladas actualmente.</p>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </div>
+
   {% include "footer.html" %}
 </body>
 </html>

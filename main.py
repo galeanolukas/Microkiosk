@@ -1,10 +1,11 @@
 from microdot import Microdot, Response, redirect, send_file
 from microdot_utemplate import render_template
-# from microdot_static import Static
+from tinydb import TinyDB, Query
 import bluetooth
 import network
 import json
 import machine, os, gc, sys
+from config_manager import *
 
 app = Microdot()
 Response.default_content_type = 'text/html'
@@ -14,7 +15,35 @@ Response.default_content_type = 'text/html'
 #ble = bluetooth.BLE()
 #ble.active(True)
 
-lista_apps = []
+db = TinyDB('users.json')
+users = db.table('users')
+User = Query()
+
+# Crear usuario admin por defecto si no existe
+if not users.contains(User.username == 'admin'):
+    users.insert({'username': 'admin', 'password': 'admin'})
+
+# Cargar Configuracion guardada
+config = read_config()
+lista_apps = config["apps"]
+
+#Decorador para sessiones
+def login_required(f):
+    async def wrapper(request, *args, **kwargs):
+        user_cookie = request.cookies.get('user')
+
+        if not user_cookie:
+            return redirect('/')
+
+        user = db.get(User.username == user_cookie)
+        if not user:
+            return redirect('/')
+
+        # Pasamos el usuario al handler
+        request.user = user
+        return await f(request, *args, **kwargs)
+
+    return wrapper
 
 def get_mem():
     s = os.statvfs('//')
@@ -30,32 +59,16 @@ def scan_wifi():
         wifi_list.append(net[0].decode('utf-8'))
         
     return wifi_list
-
-# funcion que carga la configuracion
-def load_config():
-    try:
-        with open('config.json', 'r') as f:
-            return json.load(f)
-    except OSError:
-        return {}
     
-def save_config(config):
-    with open('config.json', 'w') as f:
-        json.dump(config, f)
-
-
-#Cargar las apps desde el dir apps
+# Cargar las apps desde el dir apps
 def load_apps():
-    config = load_config()
     for app_dir in os.listdir("apps"):
         if app_dir == "__init__.py" or app_dir == "__pycache__":
             pass
         else:
             lista_apps.append(app_dir)
             
-    config["apps"] = lista_apps
-    save_config(config)
-
+    update_config(None, "apps", lista_apps)
     return lista_apps
 
 #funcion que importa los modulos instalados
@@ -66,19 +79,38 @@ def import_modules(path):
         
 #instala los modulos dentro de la app principal
 def install_apps(current_app):
-    lista = load_apps()
-    if lista:
-        for app_name in lista:
+
+    if lista_apps:
+        for app_name in lista_apps:
             import_modules(app_name)
             if app_name in dir():
                 sub_app = eval(app_name)
                 current_app.mount(sub_app, url_prefix=f'/{app_name}')
             
     return current_app
-                               
-@app.route('/')
-def home(request):
-    config = load_config()
+
+#### Vistas por defecto del SO ###
+@app.route('/', methods=['GET', 'POST'])
+async def login(request):
+    error = None
+    if request.method == 'POST':
+        data = request.form
+        username = data.get('username')
+        password = data.get('password')
+        user = users.get((User.username == username) & (User.password == password))
+        
+        if user:
+            response = redirect('/home')
+            response.set_cookie('user', username)
+            return response
+        
+        else:
+            error = 'Usuario o contraseña incorrectos'
+    return render_template('login.html', error=error, appname="LOGIN")
+
+@app.route('/home')
+#@login_required
+async def home(request):
     board = sys.platform
     memoria = get_mem()
     mem_perc = memoria * 4 / 100
@@ -89,15 +121,15 @@ def home(request):
                             apps=lista_apps,
                             mem=memoria,
                             mem_perc=mem_perc,
+                            user=User.username,
                             board=board.upper())
 
 @app.route('/sobre')
-def sobre(request):
-    config = load_config()
+async def sobre(request):
     return render_template('sobre.html', appname="SOBRE", titulo="SOBRE", modo=config["wifi"]["modo"])
 
 @app.route('/static/<path:path>')
-def static(request, path):
+async def static(request, path):
     if '..' in path:
         # directory traversal is not allowed
         return 'Not found', 404
@@ -105,8 +137,7 @@ def static(request, path):
     return send_file('static/' + path)
 
 @app.route('/appm', methods=["GET", "POST"])
-def app_manager(request):
-    config = load_config()
+async def app_manager(request):
     if request.method == "POST":
         pass
     
@@ -117,7 +148,7 @@ def app_manager(request):
                            apps=config["apps"])
 
 @app.route('/reiniciar', methods=["GET", "POST"])
-def reiniciar(request):
+async def reiniciar(request):
     if request.method == "POST":
         import time
         time.sleep(1)
@@ -130,9 +161,7 @@ def reiniciar(request):
                            modo=config["wifi"]["modo"])
 
 @app.route('/bt', methods=["GET", "POST"])
-def blue(request):
-    config = load_config()
-    
+async def blue(request):    
     if request.nethod == "POST":
         pass
         
@@ -142,9 +171,9 @@ def blue(request):
                            appname="BLUETOOTH MANAGER", titulo="")
         
 @app.route('/wifi', methods=["GET", "POST"])
-def wifi_conect(request):
+async def wifi_conect(request):
     redes = scan_wifi()
-    
+    config_wifi = {}
     context = {"name":None,
                    "msj":None,
                    "ssid":None,
@@ -152,14 +181,6 @@ def wifi_conect(request):
                    "modo":"ap",
                    "ip":"",
                    "appname":"WIFI MANAGER"}
-        
-    config = None
-        
-    try:
-        config = load_config()
-            
-    except OSError:
-        pass
             
     if request.method == "POST":
         ssid = request.form['essid']
@@ -167,11 +188,11 @@ def wifi_conect(request):
         modo = request.form['modo']
         ip = request.form['ip']
         if ssid and psk:
-            config["wifi"]["ssid"] = ssid
-            config["wifi"]["password"] = psk
-            config["wifi"]["modo"] = modo
-            config["wifi"]["ip"] = ip
-            save_config(config)
+            config_wifi["wifi"]["ssid"] = ssid
+            config_wifi["wifi"]["password"] = psk
+            config_wifi["wifi"]["modo"] = modo
+            config_wifi["wifi"]["ip"] = ip
+            update_config(None, "wifi", config_wifi)
             machine.reset()
             return redirect('/')
         else:
@@ -194,6 +215,46 @@ def wifi_conect(request):
                             redes=redes,
                             ip=context["ip"])
 
+@app.route('/logout')
+async def logout(request):
+    response = redirect('/login')
+    response.delete_cookie('user')
+    return response
+
+@app.route('/config', methods=['GET', 'POST'])
+async def config_view(request):
+    config = read_config()
+
+    if request.method == 'POST':
+        new_debug = request.form.get('debug') == 'on'
+        new_port = int(request.form.get('port'))
+        new_theme = request.form.get('theme')
+
+        # Comprobamos si hay cambios que requieren reinicio
+        requiere_reinicio = (
+            config['config']['debug'] != new_debug or
+            config['config']['port'] != new_port
+        )
+
+        update_config("config", new_debug)
+        update_config("config", new_port)
+        update_config("config", new_theme)
+
+        if requiere_reinicio:
+            return render_template('restarting.html')
+
+        return redirect('/config')
+
+    return render_template('config.html',
+                           port=config['config']['port'],
+                           theme=config["config"]["theme"],
+                           debug=config['config']['debug'],
+                           appname="CONFIGURACION",
+                           modo=config["wifi"]["modo"])
+
+
 if __name__ == '__main__':
+    config = read_config()
     app = install_apps(app)
-    app.run(port=80, debug=True)
+    app.run(port=config["config"]["port"],
+            debug=eval(config["config"]["debug"]))
