@@ -1,10 +1,13 @@
+import uasyncio as asyncio
+#from microdot_asyncio import Microdot, Response, redirect, send_file
 from microdot import Microdot, Response, redirect, send_file
 from microdot_utemplate import render_template
 from tinydb import TinyDB, Query
-import bluetooth
+import bt
 import network
 import json
 import machine, os, gc, sys
+import tarfile
 from config_manager import *
 
 app = Microdot()
@@ -89,9 +92,34 @@ def install_apps(current_app):
             
     return current_app
 
+def verificar_estructura_app(app_folder):
+    """Verifica que la app tenga la estructura correcta."""
+    # Ruta base de la app
+    base_path = f"apps/{app_folder}"
+
+    # Verificar existencia de la carpeta base
+    if not os.path.isdir(base_path):
+        return False, "No existe la carpeta de la aplicación."
+
+    # Verificar existencia del archivo principal
+    principal_py = f"{base_path}/{app_folder}.py"
+    if not os.path.isfile(principal_py):
+        return False, f"Falta el archivo principal {app_folder}.py."
+
+    # Verificar carpetas templates/ y static/
+    templates_path = f"{base_path}/templates"
+    static_path = f"{base_path}/static"
+
+    if not os.path.isdir(templates_path):
+        return False, "Falta la carpeta templates/"
+    if not os.path.isdir(static_path):
+        return False, "Falta la carpeta static/"
+
+    return True, "Estructura correcta."
+
 #### Vistas por defecto del SO ###
 @app.route('/', methods=['GET', 'POST'])
-async def login(request):
+def login(request):
     error = None
     if request.method == 'POST':
         data = request.form
@@ -106,11 +134,11 @@ async def login(request):
         
         else:
             error = 'Usuario o contraseña incorrectos'
-    return render_template('login.html', error=error, appname="LOGIN")
+    return render_template('login.html', error=error, appname="LOGIN", modo=config["wifi"]["modo"])
 
 @app.route('/home')
 #@login_required
-async def home(request):
+def home(request):
     board = sys.platform
     memoria = get_mem()
     mem_perc = memoria * 4 / 100
@@ -125,11 +153,11 @@ async def home(request):
                             board=board.upper())
 
 @app.route('/sobre')
-async def sobre(request):
+def sobre(request):
     return render_template('sobre.html', appname="SOBRE", titulo="SOBRE", modo=config["wifi"]["modo"])
 
 @app.route('/static/<path:path>')
-async def static(request, path):
+def static(request, path):
     if '..' in path:
         # directory traversal is not allowed
         return 'Not found', 404
@@ -137,18 +165,72 @@ async def static(request, path):
     return send_file('static/' + path)
 
 @app.route('/appm', methods=["GET", "POST"])
-async def app_manager(request):
+def app_manager(request):
+    config = read_config()
+
     if request.method == "POST":
-        pass
-    
+        uploaded_file = request.files.get('file')
+        if uploaded_file:
+            filename = uploaded_file.filename
+            app_name = None
+
+            # Guardar el archivo temporalmente
+            temp_path = "/tmp/" + filename
+            with open(temp_path, "wb") as f:
+                f.write(uploaded_file.read())
+
+            # Detectar tipo de archivo
+            if filename.endswith(".tar"):
+                with tarfile.open(temp_path, "r:gz") as tar:
+                    tar.extractall("apps/")
+                    app_name = tar.getnames()[0].split('/')[0]
+            else:
+                return render_template('appmanager.html',
+                                       titulo="APPMANAGER",
+                                       appname="APPS MANAGER",
+                                       modo=config["wifi"]["modo"],
+                                       apps=config["apps"],
+                                       msj="Archivo no soportado. Solo .tar.gz o .zip")
+
+            # Eliminar archivo temporal
+            try:
+                os.remove(temp_path)
+            except:
+                pass
+
+            # Verificar estructura antes de registrar
+            ok, mensaje = verificar_estructura_app(app_name)
+            if not ok:
+                # Borrar carpeta si está incompleta
+                import shutil
+                shutil.rmtree(f"apps/{app_name}")
+                return render_template('appmanager.html',
+                                       titulo="APPMANAGER",
+                                       appname="APPS MANAGER",
+                                       modo=config["wifi"]["modo"],
+                                       apps=config["apps"],
+                                       msj=f"Error en la app: {mensaje}")
+
+            # Registrar y montar app
+            if app_name and app_name not in config["apps"]:
+                config["apps"].append(app_name)
+                update_config(None, "apps", config["apps"])
+
+                global lista_apps
+                lista_apps = config["apps"]
+                install_apps(app)
+
+            return redirect('/appm')
+
     return render_template('appmanager.html',
                            titulo="APPMANAGER",
                            appname="APPS MANAGER",
                            modo=config["wifi"]["modo"],
-                           apps=config["apps"])
+                           apps=config["apps"],
+                           msj=None)
 
 @app.route('/reiniciar', methods=["GET", "POST"])
-async def reiniciar(request):
+def reiniciar(request):
     if request.method == "POST":
         import time
         time.sleep(1)
@@ -161,68 +243,91 @@ async def reiniciar(request):
                            modo=config["wifi"]["modo"])
 
 @app.route('/bt', methods=["GET", "POST"])
-async def blue(request):    
-    if request.nethod == "POST":
-        pass
-        
+def blue(request):
+    config = read_config()
+    #Inicia el dispositivo si esta habilitado
+    bt_device = bt.iniciar(config)
+    
+    if request.method == "POST":
+        bt_status = request.form.get("bt_status")
+        bt_name = request.form.get("bt_name") or "Microkiosk_BT"
+        bt_mode = request.form.get("bt_mode") or "peripheral"
+
+        config["bt"]["active"] = "True" if bt_status == "on" else "False"
+        config["bt"]["name"] = bt_name
+        config["bt"]["mode"] = bt_mode
+
+        update_config(None, "bt", config["bt"])
+        machine.reset()
+
     return render_template('bt.html',
                            bt=config["bt"]["active"],
+                           bt_name=config["bt"].get("name", "Microkiosk_BT"),
+                           bt_mode=config["bt"].get("mode", "peripheral"),
                            modo=config["wifi"]["modo"],
-                           appname="BLUETOOTH MANAGER", titulo="")
-        
+                           appname="BLUETOOTH MANAGER",
+                           devices=bt.escanear(bt_device, 5000),
+                           titulo="CONFIGURACIÓN BLUETOOTH")
+
 @app.route('/wifi', methods=["GET", "POST"])
-async def wifi_conect(request):
+def wifi_conect(request):
     redes = scan_wifi()
-    config_wifi = {}
-    context = {"name":None,
-                   "msj":None,
-                   "ssid":None,
-                   "password":None,
-                   "modo":"ap",
-                   "ip":"",
-                   "appname":"WIFI MANAGER"}
-            
+    config = read_config()
+    config_wifi = {"wifi": {}}
+    
+    context = {
+        "name": None,
+        "msj": None,
+        "ssid": None,
+        "password": None,
+        "modo": "ap",
+        "ip": "",
+        "appname": "WIFI MANAGER"
+    }
+
+    # Cargar datos actuales de la config
+    if config:
+        context["ssid"] = config["wifi"]["ssid"]
+        context["password"] = config["wifi"]["password"]
+        context["modo"] = config["wifi"]["modo"]
+        if eval(config["wifi"]["ip_fija"]):
+            context["ip"] = config["wifi"]["ip"]
+
+    # Si es GET y hay un ssid seleccionado desde el navegador
+    if request.method == "GET":
+        ssid = request.args.get('n')
+        if ssid:
+            context["ssid"] = ssid
+            context["password"] = ""  # limpiar password al seleccionar otra red
+            context["modo"] = "st"     # cambia automáticamente a modo estación
+
     if request.method == "POST":
         ssid = request.form['essid']
         psk = request.form['password']
         modo = request.form['modo']
         ip = request.form['ip']
-        if ssid and psk:
-            config_wifi["wifi"]["ssid"] = ssid
-            config_wifi["wifi"]["password"] = psk
-            config_wifi["wifi"]["modo"] = modo
-            config_wifi["wifi"]["ip"] = ip
-            update_config(None, "wifi", config_wifi)
-            machine.reset()
-            return redirect('/')
-        else:
-            context['msj'] = "Debe completar los campos!"
-            return redirect('/')
 
-    if config:
-        context["ssid"] = config["wifi"]["ssid"]
-        context["password"] = config["wifi"]["password"]
-        context["modo"] = config["wifi"]["modo"]
-    else:
-        pass
-                
-    return render_template('wifi.html', ssid=context["ssid"],
-                            titulo="WIFI CONECTAR",
-                            msj=context["msj"],
-                            appname=context["appname"],
-                            modo=context["modo"],
-                            password=context["password"],
-                            redes=redes,
-                            ip=context["ip"])
+        if ssid and psk:
+            update_config("wifi", "ssid", ssid)
+            update_config("wifi", "password", psk)
+            update_config("wifi", "modo", modo)
+            update_config("wifi", "ip", ip)
+            utime.sleep(1)
+            machine.reset()
+        else:
+            context['msj'] = "Debe completar SSID y contraseña."
+            return render_template('wifi.html', redes=redes, **context)
+
+    return render_template('wifi.html', redes=redes, **context)
 
 @app.route('/logout')
-async def logout(request):
+def logout(request):
     response = redirect('/login')
     response.delete_cookie('user')
     return response
 
 @app.route('/config', methods=['GET', 'POST'])
-async def config_view(request):
+def config_view(request):
     config = read_config()
 
     if request.method == 'POST':

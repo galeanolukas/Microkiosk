@@ -1,6 +1,117 @@
-        .icons-local img{
-            width: 45px;
-            height: 45px;
-            color:white;
-            padding: 10px;
-          }
+.icons-local img{
+  width: 45px;
+  height: 45px;
+  color:white;
+  padding: 10px;
+}
+
+.icon-home {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/home.png') no-repeat center;
+  background-size: contain;
+}
+
+.icon-wifi {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/wifi.png') no-repeat center;
+  background-size: contain;
+}
+
+.icon-info {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/information-circle.png') no-repeat center;
+  background-size: contain;
+}
+
+.icon-reload {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/reload-circle.png') no-repeat center;
+  background-size: contain;
+}
+
+.icon-close {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/close-circle.png') no-repeat center;
+  background-size: contain;
+}
+
+.icon-server {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/server.png') no-repeat center;
+  background-size: contain;
+}
+
+.icon-settings {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/settings.png') no-repeat center;
+  background-size: contain;
+}
+
+.icon-menu {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/menu.svg') no-repeat center;
+  fill:red;
+  background-size: contain;
+}
+
+.icon-apps {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/apps.png') no-repeat center;
+  background-size: contain;
+}
+
+.icon-git {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/logo-github.png') no-repeat center;
+  background-size: contain;
+}
+
+.icon-bluetooth {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url('/static/icons/bluetooth.png') no-repeat center;
+  background-size: contain;
+}
+
+/* Estilo para el tema claro (light) */
+body.light-theme {
+    background-color: white;
+    color: black;
+}
+
+button.light-theme {
+    background-color: #f0f0f0;
+    color: black;
+}
+
+/* Estilo para el tema oscuro (dark) */
+body.dark-theme {
+    background-color: #121212;
+    color: white;
+}
+
+button.dark-theme {
+    background-color: #333;
+    color: white;
+}

@@ -15,14 +15,13 @@
             <ion-icon name="archive-outline" style="font-size: 20px; vertical-align: middle;"></ion-icon>
             <span style="vertical-align: middle;">Seleccionar Archivo</span>
           </label>
-          <input id="file-input" type="file" name="file" accept=".zip" style="display:none;">
+          <input id="file-input" type="file" name="file_app" accept=".tar" style="display:none;">
         </div>
         <div class="w3-col l6 m6 s12 w3-padding">
           <input type="submit" class="w3-button w3-blue w3-round-large w3-block" value="INSTALAR">
         </div>
       </form>
     </div>
-
     <!-- Tarjetas de apps instaladas -->
     <div class="w3-row-padding w3-padding-16 w3-content">
       {% if apps %}
@@ -54,7 +53,6 @@
       {% endif %}
     </div>
   </div>
-
   {% include "footer.html" %}
 </body>
 </html>

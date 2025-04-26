@@ -1,18 +1,80 @@
-{% args appname, titulo, bt, modo %}
+{% args appname, titulo, bt, bt_name, bt_mode, devices, modo %}
 <!DOCTYPE html>
 <html>
 {% include 'head.html' %}
 <body>
   {% include 'top_bar.html' %}
     <div class="w3-container w3-padding-large w3-center w3-animate-top w3-margin-top">
-    <div class="w3-card w3-round w3-white w3-padding-32" style="max-width: 500px; margin: auto;">
-    {% if bt == "true" %}
-    <p>BT PRENDIDO</p>
-    {% else %}
-    <p>BT APAGADO</p>
-    {% endif %}
+      <div class="w3-container w3-animate-bottom w3-margin w3-center">
+        <a onclick="document.getElementById('bluetoothModal').style.display='block'" class="w3-button w3-large w3-center w3-teal">
+          <span class="icon-bluetooth"></span>
+        </a>
+      </div>
+      <form class="w3-container" method="POST">
+        <label class="w3-text-grey"><b>Activar Bluetooth</b></label>
+        <input class="w3-check" type="checkbox" name="active" {% if bt %}checked{% endif %}><br><br>
+        <label>Nombre del dispositivo:</label>
+        <input class="w3-input" type="text" name="bt_name" value="{{ bt_name }}" placeholder="Ej: Microkiosk_BT">
+        <br><br>
+        <label class="w3-text-grey"><b>Modo Bluetooth</b></label>
+        <select class="w3-select" name="mode">
+          <option value="peripheral" {% if bt_mode == 'peripheral' %}selected{% endif %}>Peripheral</option>
+          <option value="central" {% if bt_mode == 'central' %}selected{% endif %}>Central</option>
+          <option value="both" {% if bt_mode == 'both' %}selected{% endif %}>Ambos (Both)</option>
+        </select>
+
+        <br><br>
+        <button class="w3-button w3-blue" type="submit">Guardar Configuración</button>
+      </form>
+
+      <hr>
+
+      <div class="w3-container w3-light-grey w3-card w3-padding">
+        <h5><i class="ion-information-circled w3-text-blue"></i> ¿Qué significa cada modo?</h5>
+        <ul class="w3-ul">
+          <li><b>Peripheral:</b> El dispositivo espera conexiones de otros (como un beacon o sensor).</li>
+          <li><b>Central:</b> El dispositivo se conecta activamente a otros dispositivos Bluetooth.</li>
+          <li><b>Ambos:</b> Puede conectarse y aceptar conexiones al mismo tiempo.</li>
+        </ul>
+      </div>
     </div>
+    <div id="bluetoothModal" class="w3-modal" style="z-index:10;">
+      <div class="w3-modal-content w3-animate-top w3-card-4 w3-round-large">
+        <header class="w3-container w3-teal">
+          <span onclick="document.getElementById('bluetoothModal').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+          <h3>{% if modo == "st" %}
+            <ion-icon name="wifi-outline"></ion-icon>
+            {% else %}
+            <span class="icon-bluetooth"></span>
+            {% endif %}
+            Dispositivos Disponibles
+          </h3>
+        </header>
+        <div class="w3-container w3-padding">
+          {% if devices %}
+          <ul class="w3-ul w3-hoverable">
+            {% for device in devices %}
+            <li><a class="w3-button w3-block w3-left-align w3-white" href="/bt?n={{ device.name }}">{{ device.name }} ({{ device.mac }})</a></li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <div class="w3-center w3-padding-32">
+            <p class="w3-xlarge">
+              {% if modo == "st" %}
+              <ion-icon name="wifi-outline"></ion-icon>
+              {% else %}
+              <span class="icon-bluetooth"></span>
+              {% endif %}
+            </p>
+            <p class="w3-text-gray">No se detectaron dispositivos bluetooth..</p>
+          </div>
+          {% endif %}
+        </div>
+        <footer class="w3-container w3-light-grey w3-padding">
+          <button class="w3-button w3-teal w3-round" onclick="location.reload();">Volver a Buscar</button>
+        </footer>
+      </div>
     </div>
-  {% include "footer.html" %}
+    {% include 'footer.html' %}
 </body>
 </html>
