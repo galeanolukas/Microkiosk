@@ -3,7 +3,7 @@ import uasyncio as asyncio
 from microdot import Microdot, Response, redirect, send_file
 from microdot_utemplate import render_template
 from tinydb import TinyDB, Query
-import bt
+import bt_manager
 import network
 import json
 import machine, os, gc, sys
@@ -13,10 +13,6 @@ from config_manager import *
 app = Microdot()
 Response.default_content_type = 'text/html'
 # app.mount('/static', Static('./static'))
-
-# Inicializa Bluetooth
-#ble = bluetooth.BLE()
-#ble.active(True)
 
 db = TinyDB('users.json')
 users = db.table('users')
@@ -116,6 +112,13 @@ def verificar_estructura_app(app_folder):
         return False, "Falta la carpeta static/"
 
     return True, "Estructura correcta."
+
+@app.route('/bt/scan', methods=["POST"])
+def scan_devices(request):
+    config = read_config()
+    bt_device = bt_manager.iniciar(config["bt"])
+    bt_manager.escanear(bt_device, 3000)
+    return redirect("/bt")
 
 #### Vistas por defecto del SO ###
 @app.route('/', methods=['GET', 'POST'])
@@ -245,8 +248,7 @@ def reiniciar(request):
 @app.route('/bt', methods=["GET", "POST"])
 def blue(request):
     config = read_config()
-    #Inicia el dispositivo si esta habilitado
-    bt_device = bt.iniciar(config)
+    devices = None
     
     if request.method == "POST":
         bt_status = request.form.get("bt_status")
@@ -258,15 +260,17 @@ def blue(request):
         config["bt"]["mode"] = bt_mode
 
         update_config(None, "bt", config["bt"])
-        machine.reset()
 
+    #Inicia el dispositivo si esta habilitado
+    bt_device = bt_manager.iniciar(config["bt"])
+    
     return render_template('bt.html',
                            bt=config["bt"]["active"],
                            bt_name=config["bt"].get("name", "Microkiosk_BT"),
                            bt_mode=config["bt"].get("mode", "peripheral"),
                            modo=config["wifi"]["modo"],
                            appname="BLUETOOTH MANAGER",
-                           devices=bt.escanear(bt_device, 5000),
+                           devices=bt_manager.devices_found,
                            titulo="CONFIGURACIÓN BLUETOOTH")
 
 @app.route('/wifi', methods=["GET", "POST"])

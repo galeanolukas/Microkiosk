@@ -7,7 +7,6 @@ import usocket
 import utime
 import time
 import os
-import bt
 from config_manager import *
 
 # Replace the following with your WIFI Credentials
@@ -22,7 +21,7 @@ init_config()
 #Leer la configuracion
 config = read_config()
 # Iniciar Bluetooth si está habilitado en config.json
-bt.iniciar(config["bt"])
+#bt.iniciar(config["bt"])
 
 def blink():
     lrgb_ob.on()
