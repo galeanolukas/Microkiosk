@@ -1,18 +1,22 @@
 import uasyncio as asyncio
-#from microdot_asyncio import Microdot, Response, redirect, send_file
 from microdot import Microdot, Response, redirect, send_file
-from microdot_utemplate import render_template
+#from microdot_utemplate import render_template
 from tinydb import TinyDB, Query
 import bt_manager
 import network
 import json
-import machine, os, gc, sys
+import machine, os, gc, sys, re
 import tarfile
-from config_manager import *
+from config_manager import read_config, update_config
+from apps_manager import install_apps
+from microdot_utemplate import init_templates, render_template
+import socket
+import micropython
+
+micropython.alloc_emergency_exception_buf(100)
 
 app = Microdot()
 Response.default_content_type = 'text/html'
-# app.mount('/static', Static('./static'))
 
 db = TinyDB('users.json')
 users = db.table('users')
@@ -26,9 +30,34 @@ if not users.contains(User.username == 'admin'):
 config = read_config()
 lista_apps = config["apps"]
 
+def protect_server(func):
+    def wrapper(request):
+        try:
+            return func(request)
+        except OSError as e:
+            if e.errno in [113, 104]:  # ECONNABORTED/ECONNRESET
+                print(f"Conexión interrumpida: {request.path}")
+                return Response("", status=204)
+            raise
+    return wrapper
+
+@app.route('/debug/memoria')
+def debug_memoria(request):
+    import gc
+    gc.collect()
+    return {
+        'mem_libre': gc.mem_free(),
+        'cache_templates': len(template_cache)
+    }
+
+def get_mem():
+    s = os.statvfs('//')
+    mem = s[0] * s[3]
+    return mem / 1048576
+
 #Decorador para sessiones
 def login_required(f):
-    async def wrapper(request, *args, **kwargs):
+    def wrapper(request, *args, **kwargs):
         user_cookie = request.cookies.get('user')
 
         if not user_cookie:
@@ -44,74 +73,11 @@ def login_required(f):
 
     return wrapper
 
-def get_mem():
-    s = os.statvfs('//')
-    mem = s[0] * s[3]
-    return mem / 1048576
-
 def scan_wifi():
     wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-    networks = wlan.scan()  # Devuelve una lista de tuplas con la información de las redes
-    wifi_list = []
-    for net in networks:
-        wifi_list.append(net[0].decode('utf-8'))
-        
-    return wifi_list
-    
-# Cargar las apps desde el dir apps
-def load_apps():
-    for app_dir in os.listdir("apps"):
-        if app_dir == "__init__.py" or app_dir == "__pycache__":
-            pass
-        else:
-            lista_apps.append(app_dir)
-            
-    update_config(None, "apps", lista_apps)
-    return lista_apps
-
-#funcion que importa los modulos instalados
-def import_modules(path):
-    with open(f'apps/{path}/{path}.py') as f:
-        code = f.read()
-        exec(code)
-        
-#instala los modulos dentro de la app principal
-def install_apps(current_app):
-
-    if lista_apps:
-        for app_name in lista_apps:
-            import_modules(app_name)
-            if app_name in dir():
-                sub_app = eval(app_name)
-                current_app.mount(sub_app, url_prefix=f'/{app_name}')
-            
-    return current_app
-
-def verificar_estructura_app(app_folder):
-    """Verifica que la app tenga la estructura correcta."""
-    # Ruta base de la app
-    base_path = f"apps/{app_folder}"
-
-    # Verificar existencia de la carpeta base
-    if not os.path.isdir(base_path):
-        return False, "No existe la carpeta de la aplicación."
-
-    # Verificar existencia del archivo principal
-    principal_py = f"{base_path}/{app_folder}.py"
-    if not os.path.isfile(principal_py):
-        return False, f"Falta el archivo principal {app_folder}.py."
-
-    # Verificar carpetas templates/ y static/
-    templates_path = f"{base_path}/templates"
-    static_path = f"{base_path}/static"
-
-    if not os.path.isdir(templates_path):
-        return False, "Falta la carpeta templates/"
-    if not os.path.isdir(static_path):
-        return False, "Falta la carpeta static/"
-
-    return True, "Estructura correcta."
+    if not wlan.active():
+        wlan.active(True)
+    return [net[0].decode('utf-8') for net in wlan.scan()]
 
 @app.route('/bt/scan', methods=["POST"])
 def scan_devices(request):
@@ -119,6 +85,38 @@ def scan_devices(request):
     bt_device = bt_manager.iniciar(config["bt"])
     bt_manager.escanear(bt_device, 3000)
     return redirect("/bt")
+
+@app.route('/config/save-css', methods=['POST'])
+def save_css(request):
+    css_type = request.args.get('type')  # 'theme' o 'icons'
+    if css_type not in ['theme', 'icons']:
+        return 'Tipo inválido', 400
+    
+    try:
+        # Sobrescribe el archivo correspondiente
+        with open(f'static/default_{css_type}.css', 'w') as f:
+            f.write(request.body.decode())
+        return 'CSS actualizado', 200
+    except Exception as e:
+        return f'Error: {str(e)}', 500
+
+def temas_disponibles():
+    temas = []
+    try:
+        with open('static/default_theme.css', 'r') as f:
+            contenido = f.read()
+            
+            # Dividir por "body." y luego extraer el nombre
+            partes = contenido.split('body.')
+            for parte in partes[1:]:  # Ignorar la primera parte
+                if '-theme {' in parte:
+                    tema = parte.split('-theme {')[0]
+                    if tema not in temas:
+                        temas.append(tema)
+    
+    except Exception as e:
+        print("Error leyendo temas:", e)
+    return temas
 
 #### Vistas por defecto del SO ###
 @app.route('/', methods=['GET', 'POST'])
@@ -137,8 +135,12 @@ def login(request):
         
         else:
             error = 'Usuario o contraseña incorrectos'
-    return render_template('login.html', error=error, appname="LOGIN", modo=config["wifi"]["modo"])
-
+            
+    return render_template('login.html', error=error,
+                           appname="LOGIN",
+                           modo=config["wifi"]["modo"],
+                           tema=config["config"]["theme"])
+    
 @app.route('/home')
 #@login_required
 def home(request):
@@ -148,25 +150,48 @@ def home(request):
     return render_template('home.html',
                             titulo="MICROKIOSK",
                             modo=config["wifi"]["modo"],
+                            tema=config["config"]["theme"],
                             appname="HOME",
                             apps=lista_apps,
                             mem=memoria,
                             mem_perc=mem_perc,
                             user=User.username,
-                            board=board.upper())
+                            board=board.upper()
+                           )
 
 @app.route('/sobre')
 def sobre(request):
-    return render_template('sobre.html', appname="SOBRE", titulo="SOBRE", modo=config["wifi"]["modo"])
+    return render_template('sobre.html',
+                           appname="SOBRE",
+                           titulo="SOBRE",
+                           modo=config["wifi"]["modo"],
+                           tema=config["config"]["theme"])
 
+
+    
 @app.route('/static/<path:path>')
 def static(request, path):
     if '..' in path:
         # directory traversal is not allowed
         return 'Not found', 404
     
-    return send_file('static/' + path)
-
+@app.route('/static/<path:path>')
+def serve_main_static(request, path):
+    """Sirve archivos estáticos del directorio principal"""
+    # Mapeo de extensiones a tipos MIME
+    mime_map = {
+        'css': 'text/css',
+        'js': 'text/javascript',
+        'png': 'image/png',
+        'jpg': 'image/jpeg',
+        'ico': 'image/x-icon'
+    }
+    
+    ext = path.split('.')[-1].lower()
+    content_type = mime_map.get(ext, 'text/plain')
+    print(content_type)
+    return send_file(f'static/{path}', content_type=content_type)
+    
 @app.route('/appm', methods=["GET", "POST"])
 def app_manager(request):
     config = read_config()
@@ -184,7 +209,7 @@ def app_manager(request):
 
             # Detectar tipo de archivo
             if filename.endswith(".tar"):
-                with tarfile.open(temp_path, "r:gz") as tar:
+                with tarfile.open(temp_path, "r:r") as tar:
                     tar.extractall("apps/")
                     app_name = tar.getnames()[0].split('/')[0]
             else:
@@ -193,7 +218,8 @@ def app_manager(request):
                                        appname="APPS MANAGER",
                                        modo=config["wifi"]["modo"],
                                        apps=config["apps"],
-                                       msj="Archivo no soportado. Solo .tar.gz o .zip")
+                                       msj="Archivo no soportado. Solo .tar",
+                                       tema=config["config"]["theme"])
 
             # Eliminar archivo temporal
             try:
@@ -207,7 +233,7 @@ def app_manager(request):
                 # Borrar carpeta si está incompleta
                 import shutil
                 shutil.rmtree(f"apps/{app_name}")
-                return render_template('appmanager.html',
+                return render_template('global', 'appmanager.html',
                                        titulo="APPMANAGER",
                                        appname="APPS MANAGER",
                                        modo=config["wifi"]["modo"],
@@ -243,7 +269,8 @@ def reiniciar(request):
     return render_template('reboot.html',
                            appname="APAGAR PLACA",
                            titulo="",
-                           modo=config["wifi"]["modo"])
+                           modo=config["wifi"]["modo"],
+                           tema=config["config"]["theme"])
 
 @app.route('/bt', methods=["GET", "POST"])
 def blue(request):
@@ -271,7 +298,8 @@ def blue(request):
                            modo=config["wifi"]["modo"],
                            appname="BLUETOOTH MANAGER",
                            devices=bt_manager.devices_found,
-                           titulo="CONFIGURACIÓN BLUETOOTH")
+                           titulo="CONFIGURACIÓN BLUETOOTH",
+                           tema=config["config"]["theme"])
 
 @app.route('/wifi', methods=["GET", "POST"])
 def wifi_conect(request):
@@ -286,7 +314,8 @@ def wifi_conect(request):
         "password": None,
         "modo": "ap",
         "ip": "",
-        "appname": "WIFI MANAGER"
+        "appname": "WIFI MANAGER",
+        "tema": config["config"]["theme"]
     }
 
     # Cargar datos actuales de la config
@@ -320,7 +349,7 @@ def wifi_conect(request):
             machine.reset()
         else:
             context['msj'] = "Debe completar SSID y contraseña."
-            return render_template('wifi.html', redes=redes, **context)
+            return redirect('/wifi')
 
     return render_template('wifi.html', redes=redes, **context)
 
@@ -335,7 +364,11 @@ def config_view(request):
     config = read_config()
 
     if request.method == 'POST':
-        new_debug = request.form.get('debug') == 'on'
+        if request.form.get('debug') == 'on':
+            new_debug = "True"
+        else:
+            new_debug = "False"
+            
         new_port = int(request.form.get('port'))
         new_theme = request.form.get('theme')
 
@@ -345,12 +378,15 @@ def config_view(request):
             config['config']['port'] != new_port
         )
 
-        update_config("config", new_debug)
-        update_config("config", new_port)
-        update_config("config", new_theme)
+        update_config("config", "debug", new_debug)
+        update_config("config", "port", new_port)
+        update_config("config", "theme", new_theme)
 
         if requiere_reinicio:
-            return render_template('restarting.html')
+            return render_template('restarting.html',
+                                   appname="CONFIGURACION",
+                                   modo=config["wifi"]["modo"],
+                                   tema=config["config"]["theme"])
 
         return redirect('/config')
 
@@ -359,11 +395,17 @@ def config_view(request):
                            theme=config["config"]["theme"],
                            debug=config['config']['debug'],
                            appname="CONFIGURACION",
-                           modo=config["wifi"]["modo"])
+                           modo=config["wifi"]["modo"],
+                           tema=config["config"]["theme"],
+                           temas=temas_disponibles())
 
 
 if __name__ == '__main__':
+    #Carga la config del Sistema
     config = read_config()
+    #Instala las apps cargadas
     app = install_apps(app)
+    #Ejecuta el servidor del framework
     app.run(port=config["config"]["port"],
             debug=eval(config["config"]["debug"]))
+            

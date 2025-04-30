@@ -1,34 +1,46 @@
 from utemplate import recompile
+from microdot import Microdot
+import gc
 
-_loader = None
+# Caché de loaders
+_loaders = {
+    'main': None,  # Loader para templates principales
+    'apps': {}     # Diccionario de loaders por app
+}
 
+def init_templates(main_template_dir='templates', loader_class=recompile.Loader):
+    """Inicializa el sistema de templates para el directorio principal y apps"""
+    global _loaders
+    _loaders['main'] = loader_class(None, main_template_dir)
 
-def init_templates(template_dir='templates', loader_class=recompile.Loader):
-    """Initialize the templating subsystem.
-
-    :param template_dir: the directory where templates are stored. This
-                         argument is optional. The default is to load templates
-                         from a *templates* subdirectory.
-    :param loader_class: the ``utemplate.Loader`` class to use when loading
-                         templates. This argument is optional. The default is
-                         the ``recompile.Loader`` class, which automatically
-                         recompiles templates when they change.
-    """
-    global _loader
-    _loader = loader_class(None, template_dir)
-
+def init_app_templates(app_name, app_template_dir=None):
+    """Registra los templates de una app específica"""
+    if app_template_dir is None:
+        app_template_dir = f"apps/{app_name}/templates"
+    
+    _loaders['apps'][app_name] = recompile.Loader(None, app_template_dir)
 
 def render_template(template, *args, **kwargs):
-    """Render a template.
-
-    :param template: The filename of the template to render, relative to the
-                     configured template directory.
-    :param args: Positional arguments to be passed to the render engine.
-    :param kwargs: Keyword arguments to be passed to the render engine.
-
-    The return value is an iterator that returns sections of rendered template.
-    """
-    if _loader is None:  # pragma: no cover
+    """Renderiza un template del directorio principal"""
+    if _loaders['main'] is None:
         init_templates()
-    render = _loader.load(template)
-    return render(*args, **kwargs)
+    
+    try:
+        gc.collect()
+        return _loaders['main'].load(template)(*args, **kwargs)
+    except Exception as e:
+        print(f"Error renderizando {template}: {str(e)}")
+        return f"<h1>Error en template {template}</h1>"
+
+def render_app_template(app_name, template, *args, **kwargs):
+    """Renderiza un template de una app específica"""
+    if app_name not in _loaders['apps']:
+        init_app_templates(app_name)
+    
+    try:
+        gc.collect()
+        return _loaders['apps'][app_name].load(template)(*args, **kwargs)
+    except Exception as e:
+        print(f"Error en app {app_name}, template {template}: {str(e)}")
+        return f"<h1>Error en template {template}</h1>"
+    

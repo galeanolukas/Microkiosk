@@ -1,12 +1,12 @@
-{% args titulo, appname, modo, apps, msj %}
+{% args titulo, appname, modo, apps, msj, tema %}
 <!DOCTYPE html>
 <html>
 {% include 'head.html' %}
-<body>
+<body class="{{ tema }}-theme">
   {% include 'top_bar.html' %}
 
   <div class="w3-container w3-padding-16 w3-center w3-animate-top">
-    <!-- Formulario para subir nueva app -->
+
     <div class="w3-card w3-round-large w3-padding-32 w3-margin-bottom w3-white w3-max-width">
       <h2 class="w3-text-indigo">Cargar Nueva App</h2>
       <form action="/upload" method="post" enctype="multipart/form-data" class="w3-row-padding w3-margin-top">
@@ -18,11 +18,11 @@
           <input id="file-input" type="file" name="file_app" accept=".tar" style="display:none;">
         </div>
         <div class="w3-col l6 m6 s12 w3-padding">
-          <input type="submit" class="w3-button w3-blue w3-round-large w3-block" value="INSTALAR">
+          <input type="submit" class="{{ tema }}-theme w3-button w3-round-large w3-block" value="INSTALAR">
         </div>
       </form>
     </div>
-    <!-- Tarjetas de apps instaladas -->
+    
     <div class="w3-row-padding w3-padding-16 w3-content">
       {% if apps %}
         {% for app in apps %}

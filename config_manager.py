@@ -20,7 +20,7 @@ def init_config():
             "mode": "peripheral"
         },
         "favoritos": {},
-        "apps": ["home_app", "test_app"],
+        "apps": {},
         "config": {
             "debug": "True",
             "port": 80,
@@ -61,11 +61,17 @@ def read_config():
             return json.load(f)
     except:
         # Si el archivo no existe o está corrupto, retorna configuración por defecto
-        return {"wifi": {"modo": "ap", "ssid": "Microkiosk", "password": "Microkiosk", "gateway": "", "dns": "", "ip": "", "subnet": "", "ip_fija": "True"},
-                         "favoritos": {},
-                         "apps": ["home_app", "test_app"],
-                         "config": {"debug": "False", "port": 80, "theme": "light"},
-                         "hostname": "",
+        return {"wifi": {"modo": "ap",
+                         "ssid": "Microkiosk",
+                         "password": "Microkiosk",
+                         "gateway": "",
+                         "dns": "",
+                         "ip": "",
+                         "subnet": "",
+                         "ip_fija": "True",
+                         "hostname": ""},
+                "apps": {},
+                "config": {"debug": "False", "port": 80, "theme": "light"},
                 }
 
 def write_config(new_config):

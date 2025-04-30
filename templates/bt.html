@@ -1,8 +1,8 @@
-{% args appname, titulo, bt, bt_name, bt_mode, devices, modo %}
+{% args appname, titulo, bt, bt_name, bt_mode, devices, modo, tema %}
 <!DOCTYPE html>
 <html>
 {% include 'head.html' %}
-<body>
+<body class="{{ tema }}-theme">
   {% include 'top_bar.html' %}
     <div class="w3-container w3-padding-large w3-center w3-animate-top w3-margin-top">
       <div class="w3-container w3-animate-bottom w3-margin w3-center">
@@ -24,7 +24,7 @@
         </select>
 
         <br><br>
-        <button class="w3-button w3-blue" type="submit">Guardar Configuración</button>
+        <button class="{{ tema }}-theme w3-button" type="submit">Guardar Configuración</button>
       </form>
 
       <hr>
@@ -72,7 +72,7 @@
         </div>
         <footer class="w3-container w3-center w3-light-grey w3-padding">
           <form action="/bt/scan" method="post">
-            <button class="w3-button w3-blue">BUSCAR</button>
+            <button class="{{ tema }}-theme w3-button">BUSCAR</button>
           </form>
         </footer>
       </div>

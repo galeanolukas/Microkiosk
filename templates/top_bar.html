@@ -1,6 +1,4 @@
-<div class="w3-card-4">
-<div class="w3-bar w3-blue">
-     <h2 class="w3-bar-item">{{ appname }}</h2>
-     <a href="/" class="w3-bar-item w3-button w3-right w3-margin" style="font-size:2em;">{% if modo == "ap" %}<span class="icon-close"></span>{% else %}<ion-icon name="close-circle-outline"></ion-icon>{% endif %}</a>
-</div>
-</div>
+<header class="{{ tema }}-theme w3-bar">
+     <h2 class="w3-bar-item w3-left w3-padding">{{ appname }}</h2>
+     <a href="/" class="w3-bar-item w3-button w3-right w3-margin" style="font-size:2em;">{% if modo == "ap" %}<span class="icon-close-circle"></span>{% else %}<ion-icon name="close-circle-outline"></ion-icon>{% endif %}</a>
+</header>

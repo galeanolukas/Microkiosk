@@ -1,0 +1,29 @@
+<div id="apps-panel" class="w3-hide w3-animate-opacity w3-container w3-margin-top">
+  {% if apps %}
+  <div class="w3-row-padding">
+    {% for app in apps.values() %}
+    <div class="w3-third w3-padding">
+      <a href="/{{ app['name'] }}/" class="w3-card w3-round-large w3-hover-shadow w3-block clickable-card" style="text-decoration: none;">
+        <button class="fav-btn w3-display-topright" onclick="">
+        {% if modo == "st" %}
+        <i class="icon ion-ios-heart-outline"></i>
+        {% else }
+        favorito
+        {% endif %}
+        </button>
+        <div class="w3-center w3-padding">
+          <img src="{{ app['icon'] }}" alt="Icono" style="width:80px; height:80px;">
+        </div>
+        <div class="w3-container w3-center">
+          <h5 class="w3-text-black">{{ app['name'] }}</h5>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="w3-container w3-center">
+    <h3>No hay aplicación instaladas</h3>
+  </div>
+  {% endif %}
+</div>

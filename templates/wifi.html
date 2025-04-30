@@ -1,8 +1,8 @@
-{% args msj, ssid, password, appname, modo, redes, name, ip %}
+{% args msj, ssid, password, appname, modo, redes, name, ip, tema%}
 <!DOCTYPE html>
 <html>
 {% include 'head.html' %}
-<body>
+<body class="{{ tema }}-theme">
   {% include 'top_bar.html' %}
   <div class="w3-container w3-animate-top w3-center">
         {% if msj %}
@@ -12,7 +12,7 @@
         </div>
         {% endif %}
         <div class="w3-container w3-animate-bottom w3-margin w3-center">
-          <a onclick="document.getElementById('wifiModal').style.display='block'" class="w3-button w3-large w3-center w3-teal">
+          <a onclick="document.getElementById('wifiModal').style.display='block'" class="{{ tema }}-theme w3-button w3-large w3-center">
             <span class="icon-wifi"></span>
           </a>
         </div>
@@ -42,7 +42,7 @@
                 <label class="w3-text-teal"><b>IP Fija (opcional):</b></label>
                 <input class="w3-input w3-border w3-round" type="text" id="ip" name="ip" value="{{ ip }}">
                 <br>
-                <button class="w3-button w3-teal w3-margin w3-round-large w3-block" type="submit">
+                <button class="{{ tema }}-theme w3-button w3-margin w3-round-large w3-block" type="submit">
                     Conectar
                 </button>
             </form>
@@ -68,7 +68,7 @@
             {% endif %}
           </div>
           <footer class="w3-container w3-light-grey w3-padding">
-            <button class="w3-button w3-teal w3-round" onclick="location.reload();">Volver a Buscar</button>
+            <button class="{{ tema }}-theme w3-button w3-round" onclick="location.reload();">Volver a Buscar</button>
           </footer>
         </div>
       </div>

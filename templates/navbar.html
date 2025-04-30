@@ -1,10 +1,9 @@
-<div class="w3-bar w3-blue w3-large" id="main">
-  <button id="openNav" class="w3-bar-item w3-margin w3-button w3-blue w3-hover-light-blue" onclick="w3_open()">
+<header class="{{ tema }}-theme w3-bar w3-large" id="main">
+  <button id="openNav" class="{{ tema }}-theme w3-bar-item w3-margin w3-button w3-hover-light-blue" onclick="w3_open()">
     <img src="static/logo.png" style="height:40px;">
   </button>
   <span class="w3-bar-item w3-margin w3-xlarge w3-hide-small">{{ titulo }}</span>
-
-  <div class="w3-right">
-    <a href="/" class="w3-bar-item w3-margin w3-button w3-hover-white">{% if modo == "ap" %}Salir{% else %}<ion-icon name="home-sharp"></ion-icon>{% endif %}</a>
-  </div>
-</div>
+  <button onclick="togglePanel()" class="w3-bar-item w3-right w3-button w3-margin w3-round-large">
+        <span class="icon-caret-down">MENU APPS</span>
+  </button>
+</header>

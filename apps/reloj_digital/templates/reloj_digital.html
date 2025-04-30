@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Funciona!!!</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="w3-container w3-padding-32">
+        <div class="w3-card-4 w3-padding">
+            <h2 class="w3-center">Reloj Digital</h2>
+            <div id="time" class="w3-jumbo w3-center"></div>
+        </div>
+    </div>
+
+    <script>
+        async function updateTime() {
+            const res = await fetch('/reloj_digital/time');
+            const time = await res.json();
+            document.getElementById('time').innerText =
+                `${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}:${time.second.toString().padStart(2, '0')}`;
+        }
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>

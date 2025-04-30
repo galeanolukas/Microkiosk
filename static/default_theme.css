@@ -1,0 +1,50 @@
+/* Estilo para el tema claro (light) */
+body.light-theme {
+    background-color: white;
+    color: black;
+}
+/* Estilo para el tema oscuro (dark) */
+body.dark-theme {
+    background-color: #121212;
+    color: white;
+}
+
+button.light-theme {
+  color: #fff;
+  background-color: #2196F3;
+}
+
+button.dark-theme {
+    background-color: #333;
+    color: white;
+}
+
+header.light-theme {
+  color: #fff;
+  background-color: #2196F3;
+}
+
+header.dark-theme {
+    background-color: #121212;
+    color: white;
+}
+
+footer.light-theme {
+  color: #fff;
+  background-color: #2196F3;
+}
+
+footer.dark-theme {
+    background-color: #121212;
+    color: white;
+}
+
+nav.light-theme {
+  color: #fff;
+  background-color: #2196F3;
+}
+
+nav.dark-theme {
+    background-color: #121212;
+    color: white;
+}
