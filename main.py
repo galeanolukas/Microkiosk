@@ -9,14 +9,14 @@ import machine, os, gc, sys, re
 import tarfile
 from config_manager import read_config, update_config
 from apps_manager import install_apps
-from microdot_utemplate import init_templates, render_template
+from microdot_utemplate import render_template, init_static_routes
 import socket
 import micropython
 
 micropython.alloc_emergency_exception_buf(100)
 
 app = Microdot()
-Response.default_content_type = 'text/html'
+#Response.default_content_type = 'text/html'
 
 db = TinyDB('users.json')
 users = db.table('users')
@@ -51,7 +51,7 @@ def debug_memoria(request):
     }
 
 def get_mem():
-    s = os.statvfs('//')
+    s = os.statvfs('/')
     mem = s[0] * s[3]
     return mem / 1048576
 
@@ -167,31 +167,25 @@ def sobre(request):
                            modo=config["wifi"]["modo"],
                            tema=config["config"]["theme"])
 
+def get_content_type(filename):
+    if filename.endswith('.css'):
+        return 'text/css'
+    elif filename.endswith('.svg'):
+        return 'image/svg+xml'
+    elif filename.endswith('.js'):
+        return 'application/javascript'
+    elif filename.endswith('.png'):
+        return 'image/png'
+    return 'application/octet-stream'
 
-    
 @app.route('/static/<path:path>')
 def static(request, path):
     if '..' in path:
         # directory traversal is not allowed
         return 'Not found', 404
     
-@app.route('/static/<path:path>')
-def serve_main_static(request, path):
-    """Sirve archivos estáticos del directorio principal"""
-    # Mapeo de extensiones a tipos MIME
-    mime_map = {
-        'css': 'text/css',
-        'js': 'text/javascript',
-        'png': 'image/png',
-        'jpg': 'image/jpeg',
-        'ico': 'image/x-icon'
-    }
-    
-    ext = path.split('.')[-1].lower()
-    content_type = mime_map.get(ext, 'text/plain')
-    print(content_type)
-    return send_file(f'static/{path}', content_type=content_type)
-    
+    return send_file(f"static/{path}", content_type=get_content_type(path))
+
 @app.route('/appm', methods=["GET", "POST"])
 def app_manager(request):
     config = read_config()

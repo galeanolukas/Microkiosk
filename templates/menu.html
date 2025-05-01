@@ -1,29 +1,27 @@
-<div id="apps-panel" class="w3-hide w3-animate-opacity w3-container w3-margin-top">
-  {% if apps %}
-  <div class="w3-row-padding">
-    {% for app in apps.values() %}
-    <div class="w3-third w3-padding">
-      <a href="/{{ app['name'] }}/" class="w3-card w3-round-large w3-hover-shadow w3-block clickable-card" style="text-decoration: none;">
-        <button class="fav-btn w3-display-topright" onclick="">
-        {% if modo == "st" %}
-        <i class="icon ion-ios-heart-outline"></i>
-        {% else }
-        favorito
-        {% endif %}
-        </button>
-        <div class="w3-center w3-padding">
-          <img src="{{ app['icon'] }}" alt="Icono" style="width:80px; height:80px;">
-        </div>
-        <div class="w3-container w3-center">
-          <h5 class="w3-text-black">{{ app['name'] }}</h5>
-        </div>
-      </a>
+<div id="AppsPanel" class="w3-hide w3-animate-top">
+  <div class="w3-container w3-padding-large">
+    <div class="w3-row-padding w3-center">
+      {% for app in apps.values() %}
+      <div class="w3-col s4 m4 l4 w3-padding">
+        <a href="{{ app['url'] }}" class="w3-button w3-round-large w3-hover-opacity w3-hover-text-white">
+
+          <div class="w3-padding-16">
+            <div class="w3-circle">
+              <img src="{{ app['icon'] }}" alt="{{ app['name'] }}" class="w3-image">
+            </div>
+          </div>
+          <div class="w3-padding-small">
+            <span class="w3-text-white w3-small">{{ app['name'] }}</span>
+          </div>
+
+          {% if app['fav'] == 'True' %}
+          <div class="w3-display-topright w3-padding-small">
+            <span class="w3-text-red">♥</span>
+          </div>
+          {% endif %}
+        </a>
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
   </div>
-  {% else %}
-  <div class="w3-container w3-center">
-    <h3>No hay aplicación instaladas</h3>
-  </div>
-  {% endif %}
 </div>

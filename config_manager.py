@@ -12,14 +12,14 @@ def init_config():
             "dns": "",
             "ip": "",
             "subnet": "",
-            "ip_fija": "False"
+            "ip_fija": "False",
+            "localhost": "",
         },
         "bt": {
             "active": "False",
             "name": "Microkiosk_BT",
             "mode": "peripheral"
         },
-        "favoritos": {},
         "apps": {},
         "config": {
             "debug": "True",

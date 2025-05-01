@@ -3,30 +3,21 @@
 <html>
 {% include 'head.html' %}
 <body class="{{ tema }}-theme">
-  {% include 'sidebar.html' %}
   {% include 'navbar.html' %}
-  <main class="w3-content w3-padding w3-center">
-  {% include 'menu.html' %}
-    <h5>FAVORITOS</h5>
-    {% if apps %}
+  <main class="w3-content w3-padding w3-center w3-margin-top">
+    {% include 'menu.html' %}
+    <h5><span class="icon icon-heart icon-lg icon-red"></span> FAVORITOS</h5>
       {% for app in apps.values() %}
       {% if app["fav"] == "True" %}
       <div class="w3-third w3-padding">
         <a href="/{{ app['name'] }}/" class="w3-card-4 w3-hover w3-white w3-round-large" style="text-decoration:none;">
-          <header class="w3-container w3-blue w3-round-top">
-          </header>
           <div class="w3-container w3-padding">
-            <div class="w3-center w3-padding">
               {% if app["icon"] %}
               <img src="{{ app['icon'] }}" alt="Icono" style="width:80px; height:80px;">
               {% else %}
               <i class="icon-apps"></i>
               {% endif %}
-            </div>
-            <div class="w3-container w3-center">
               <h5 class="w3-text-black">{{ app['name'] }}</h5>
-            </div>
-          </div>
           <footer class="w3-container w3-center w3-light-grey w3-round-bottom">
             <p>{{ app['info'] }}</p>
             <br>
@@ -34,20 +25,19 @@
             <hr>
             <small class="w3-text-gray">by {{ app['author'] }}</small>
           </footer>
-        </a>
-      </div>
-      {% endif %}
-      {% endfor %}
+        </div>
+      </a>
+    </div>
     {% else %}
     <div class="w3-container w3-padding w3-margin-top">
-      <div class="w3-card-4 w3-white w3-round-large">
+      <div class="w3-card-4 w3-light-gray w3-round-large">
         <h4>No tenes apps favoritas</h4>
       </div>
     </div>
     {% endif %}
-      <div class="w3-container w3-padding w3-margin-top">
+    {% endfor %}
+      <div class="w3-container w3-padding w3-gray w3-margin-top">
         <h5>{{ board }} HARDWARE</h5>
-
         <p>Memoria Disponible</p>
         <div class="w3-grey w3-round">
           <div class="w3-container w3-center w3-green w3-round" style="width:{{ mem_perc }}%">
@@ -66,30 +56,26 @@
         </div>
       </div>
     </div>
-
-    <script>
-    function w3_open() {
-      document.getElementById("main").style.marginLeft = "250px";
-      document.getElementById("mySidebar").style.display = "block";
-      document.getElementById("openNav").style.display = 'none';
-    }
-
-    function w3_close() {
-      document.getElementById("main").style.marginLeft = "0";
-      document.getElementById("mySidebar").style.display = "none";
-      document.getElementById("openNav").style.display = "inline-block";
-    }
-
-    function togglePanel() {
-      var x = document.getElementById("apps-panel");
-      if (x.classList.contains("w3-hide")) {
-        x.classList.remove("w3-hide");
-      } else {
-        x.classList.add("w3-hide");
-      }
-    }
-  </script>
 </main>
 {% include "footer.html" %}
+<script>
+function toggleSidebar() {
+  var bar = document.getElementById("mySidebar");
+  if (bar.classList.contains("w3-hide")) {
+    bar.classList.remove("w3-hide");
+  } else {
+    bar.classList.add("w3-hide");
+  }
+}
+
+function toggleAppsMenu() {
+  var panel = document.getElementById("AppsPanel");
+  if (panel.classList.contains("w3-hide")) {
+    panel.classList.remove("w3-hide");
+  } else {
+    panel.classList.add("w3-hide");
+  }
+}
+</script>
 </body>
 </html>

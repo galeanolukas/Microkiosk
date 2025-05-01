@@ -2,7 +2,7 @@ import json
 import os, gc
 import tarfile
 import config_manager
-from microdot_utemplate import init_app_templates
+from microdot_utemplate import init_app_templates, init_static_routes
 
 def exists(path):
     """Reemplazo de os.path.exists para MicroPython."""
@@ -84,7 +84,8 @@ def load_apps():
 
         apps_info[app_dir] = {
             "name": parse_app_metadata(script_file_path).get("name", f"{app_dir}"),
-            "icon": f"/{icon_file}" if icon_file else "/static/icons/apps.png",
+            "url": f"/{app_dir}/",
+            "icon": f"/{icon_file}" if icon_file else "/static/micropython.png",
             "style": f"/{style_file}" if style_file else None,
             "template": f"{template_file}" if template_file else None,
             "author": parse_app_metadata(script_file_path).get("author", ""),

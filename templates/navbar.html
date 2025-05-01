@@ -1,9 +1,39 @@
 <header class="{{ tema }}-theme w3-bar w3-large" id="main">
-  <button id="openNav" class="{{ tema }}-theme w3-bar-item w3-margin w3-button w3-hover-light-blue" onclick="w3_open()">
-    <img src="static/logo.png" style="height:40px;">
+  <button id="openNav" class="{{ tema }}-theme w3-bar-item w3-margin w3-button w3-hover-light-blue" onclick="toggleSidebar()">
+    <span class="icon icon-menu icon-white icon-lg"></span>
   </button>
   <span class="w3-bar-item w3-margin w3-xlarge w3-hide-small">{{ titulo }}</span>
-  <button onclick="togglePanel()" class="w3-bar-item w3-right w3-button w3-margin w3-round-large">
-        <span class="icon-caret-down">MENU APPS</span>
+  <button class="w3-bar-item w3-right w3-button w3-margin w3-round-large" onclick="toggleAppsMenu()">
+        <span class="icon icon-apps icon-white icon-lg"></span>
+        MENU APPS
   </button>
 </header>
+
+<nav class="{{ tema }}-theme w3-sidebar w3-bar-block w3-card w3-animate-left" style="width:250px;" id="mySidebar">
+  <div class="w3-container w3-padding w3-center">
+  </div>
+  <a href="/wifi" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
+    <span class="icon icon-wifi"></span>
+    <span>Wifi</span>
+  </a>
+  <a href="/bt" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
+    <span class="icon icon-bluetooth"></span>
+    <span>Bluetooth</span>
+  </a>
+  <a href="/appm" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
+    <span class="icon icon-apps"></span>
+    <span>AppMan</span>
+  </a>
+  <a href="/config" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
+    <span class="icon icon-settings"></span>
+    <span>Configuración</span>
+  </a>
+  <a href="/sobre" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
+    <span class="icon icon-info"></span>
+    <span>Sobre</span>
+  </a>
+  <a href="/reiniciar" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
+    <span class="icon icon-reload"></span>
+    <span>Reiniciar</span>
+  </a>
+</nav>

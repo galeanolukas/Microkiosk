@@ -1,118 +1,182 @@
+.icon {
+  --icon-color: currentColor; /* Color por defecto (hereda del padre) */
+  display: inline-block;
+  vertical-align: middle;
+  background-color: var(--icon-color);
+  width: 24px;
+  height: 24px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+/* Tamaños alternativos */
+.icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-lg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Colores temáticos */
+.icon-white {
+  --icon-color: white;
+}
+
+.icon-black {
+  --icon-color: black;
+}
+
+.icon-blue {
+  --icon-color: #2196F3;
+}
+
+.icon-red {
+  --icon-color: #F44336;
+}
+
 .icon-local img{
   display: inline-block;
   width: 30px;
   height: 30px;
-  background-size: contain;
 }
 
 .icon-home {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/home.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/home.svg');
+  mask-image: url('/static/icons/home.svg');
 }
 
 .icon-wifi {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/wifi.png') no-repeat center;
-  background-size: contain;
-}
+  -webkit-mask-image: url('/static/icons/wifi.svg');
+  mask-image: url('/static/icons/wifi.svg');
+  }
 
 .icon-info {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/information-circle.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/info.svg');
+  mask-image: url('/static/icons/info.svg');
 }
 
 .icon-reload {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/reload-circle.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/refresh-ccw.svg');
+  mask-image: url('/static/icons/refresh-ccw.svg');
 }
 
 .icon-close-circle {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/close-circle.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/x-circle.svg');
+  mask-image: url('/static/icons/x-circle.svg');
 }
 
 .icon-close {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/close.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/x.svg');
+  mask-image: url('/static/icons/x.svg');
 }
 .icon-server {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/server.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/server.svg');
+  mask-image: url('/static/icons/server.svg');
 }
 
 .icon-settings {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/settings.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/settings.svg');
+  mask-image: url('/static/icons/settings.svg');
 }
 
 .icon-menu {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/menu.png') no-repeat center;
-  fill:red;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/menu.svg');
+  mask-image: url('/static/icons/menu.svg');
 }
 
 .icon-apps {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/apps.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/grid.svg');
+  mask-image: url('/static/icons/grid.svg');
 }
 
 .icon-git {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/logo-github.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/github.svg');
+  mask-image: url('/static/icons/github.svg');
 }
 
 .icon-bluetooth {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/bluetooth.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/bluetooth.svg');
+  mask-image: url('/static/icons/bluetooth.svg');
 }
 
 .icon-alert {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/alert-circle.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/alert-circle.svg');
+  mask-image: url('/static/icons/alert-circle.svg');
 }
 
 .icon-caret-down {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: url('/static/icons/caret-down.png') no-repeat center;
-  background-size: contain;
+  -webkit-mask-image: url('/static/icons/down.svg');
+  mask-image: url('/static/icons/down.svg');
+}
+
+.icon-disk {
+  -webkit-mask-image: url('/static/icons/hard-drive.svg');
+  mask-image: url('/static/icons/hard-drive.svg');
+}
+
+.icon-cpu {
+  -webkit-mask-image: url('/static/icons/cpu.svg');
+  mask-image: url('/static/icons/cpu.svg');
+}
+
+.icon-folder {
+  -webkit-mask-image: url('/static/icons/folder.svg');
+  mask-image: url('/static/icons/folder.svg');
+}
+
+.icon-power {
+  -webkit-mask-image: url('/static/icons/power.svg');
+  mask-image: url('/static/icons/power.svg');
+}
+
+.icon-database {
+  -webkit-mask-image: url('/static/icons/database.svg');
+  mask-image: url('/static/icons/database.svg');
+}
+
+.icon-trash {
+  -webkit-mask-image: url('/static/icons/trash-2.svg');
+  mask-image: url('/static/icons/trash-2.svg');
+}
+
+.icon-package {
+  -webkit-mask-image: url('/static/icons/package.svg');
+  mask-image: url('/static/icons/package.svg');
+}
+
+.icon-arrowleft {
+  -webkit-mask-image: url('/static/icons/arrow-left-circle.svg');
+  mask-image: url('/static/icons/arrow-left-circle.svg');
+}
+
+.icon-heart {
+  -webkit-mask-image: url('/static/icons/heart.svg');
+  mask-image: url('/static/icons/heart.svg');
+}
+
+.icon-user {
+  -webkit-mask-image: url('/static/icons/user.svg');
+  mask-image: url('/static/icons/user.svg');
+}
+
+.icon-image {
+  -webkit-mask-image: url('/static/icons/image.svg');
+  mask-image: url('/static/icons/image.svg');
+}
+
+.icon-search {
+  -webkit-mask-image: url('/static/icons/search.svg');
+  mask-image: url('/static/icons/search.svg');
+}
+
+.icon-help {
+  -webkit-mask-image: url('/static/icons/help-circle.svg');
+  mask-image: url('/static/icons/help-circle.svg');
 }

@@ -1,47 +1,51 @@
 <nav class="{{ tema }}-theme w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none; width:250px;" id="mySidebar">
   <div class="w3-container w3-padding-16 w3-center">
     <button class="w3-button w3-right w3-margin-bottom" onclick="w3_close()">
-      {% if modo == "ap" %}<span class="icon-close"></span>{% else %}<ion-icon name="close-circle-outline"></ion-icon>{% endif %}
+      {% if modo == "ap" %}
+      <span class="icon icon-close"></span>
+      {% else %}
+      <ion-icon name="close-circle-outline"></ion-icon>
+      {% endif %}
     </button>
   </div>
-  <a href="/wifi" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+  <a href="/wifi" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
     {% if modo == "st" %}<ion-icon name="wifi-outline"></ion-icon>
     {% else %}
-    <span class="icon-wifi"></span>
+    <span class="icon icon-wifi"></span>
     {% endif %}
     <span>Wifi</span>
   </a>
-  <a href="/bt" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+  <a href="/bt" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
     {% if modo == "st" %}<ion-icon name="bluetooth-sharp"></ion-icon>
     {% else %}
-    <span class="icon-bluetooth"></span>
+    <span class="icon icon-bluetooth"></span>
     {% endif %}
     <span>Bluetooth</span></a>
-  <a href="/appm" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+  <a href="/appm" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
     {% if modo == "st" %}<ion-icon name="apps-outline"></ion-icon>
     {% else %}
-    <span class="icon-apps"></span>
+    <span class="icon icon-apps"></span>
     {% endif %}
     <span>AppMan</span>
   </a>
-  <a href="/config" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+  <a href="/config" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
     {% if modo == "st" %}<ion-icon name="settings-outline"></ion-icon>
     {% else %}
-    <span class="icon-settings"></span>
+    <span class="icon icon-settings"></span>
     {% endif %}
     <span>Configuración</span>
   </a>
-  <a href="/sobre" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+  <a href="/sobre" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
     {% if modo == "st" %}<ion-icon name="information-circle"></ion-icon>
     {% else %}
-    <span class="icon-info"></span>
+    <span class="icon icon-info"></span>
     {% endif %}
     <span>Sobre</span>
   </a>
-  <a href="/reiniciar" class="icons-local w3-bar-item w3-button w3-hover-light-blue w3-large">
+  <a href="/reiniciar" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
     {% if modo == "st" %}<ion-icon name="reload-circle"></ion-icon>
     {% else %}
-    <span class="icon-reload"></span>
+    <span class="icon icon-reload"></span>
     {% endif %}
     <span>Reiniciar</span>
   </a>

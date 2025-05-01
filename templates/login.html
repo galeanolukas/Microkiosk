@@ -3,9 +3,11 @@
 <html>
   {% include 'head.html' %}
 <body class="{{ tema }}-theme">
-  <div class="w3-container w3-padding-64 w3-center">
+  <div class="w3-container w3-gray w3-padding-64 w3-center">
     <div class="w3-card w3-white w3-padding-32 w3-round-large w3-display-inline-block">
       <h2 class="w3-text-blue">Iniciar Sesión</h2>
+      <br>
+      <span class="icon icon-user icon-lg"></span>
       {% if error %}
         <div class="w3-panel w3-pale-red w3-border w3-round">
           <p>{{ error }}</p>
@@ -14,10 +16,8 @@
       <form method="POST" class="w3-padding w3-margin">
         <p><input class="w3-input w3-border" name="username" placeholder="Usuario" required></p>
         <p><input class="w3-input w3-border" name="password" type="password" placeholder="Contraseña" required></p>
-        <br>
         <hr>
-        <br>
-        <p class="w3-margin-top"><button class="{{ tema }}-theme w3-button w3-round-large w3-block">INGRESAR</button></p>
+        <p class="w3-margin-top"><button class="{{ tema }}-theme w3-button w3-round w3-block">INGRESAR</button></p>
       </form>
     </div>
   </div>
