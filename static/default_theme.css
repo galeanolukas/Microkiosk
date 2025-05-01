@@ -5,7 +5,7 @@ body.light-theme {
 }
 /* Estilo para el tema oscuro (dark) */
 body.dark-theme {
-    background-color: #121212;
+    background-color: #3e3e3e;
     color: white;
 }
 
@@ -25,7 +25,7 @@ header.light-theme {
 }
 
 header.dark-theme {
-    background-color: #121212;
+    background-color: #3e3e3e;
     color: white;
 }
 
@@ -35,7 +35,7 @@ footer.light-theme {
 }
 
 footer.dark-theme {
-    background-color: #121212;
+    background-color: #3e3e3e;
     color: white;
 }
 
@@ -45,6 +45,6 @@ nav.light-theme {
 }
 
 nav.dark-theme {
-    background-color: #121212;
+    background-color: #3e3e3e;
     color: white;
 }

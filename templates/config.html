@@ -5,7 +5,7 @@
 <body class="{{ tema }}-theme">
   {% include 'top_bar.html' %}
   <div class="w3-container w3-padding w3-center w3-margin">
-    <div class="w3-card-4 w3-white w3-round-large w3-padding">
+    <div class="w3-card w3-light-gray w3-round-large w3-padding">
       <h3 class="w3-text-indigo">Configuración del sistema</h3>
       <form method="post" class="w3-container w3-padding">
         <label class="w3-margin-top">Puerto:</label>
@@ -31,8 +31,7 @@
           Activar modo debug
         </label>
         <hr>
-        <br>
-        <button type="submit" class="{{ tema }}-theme w3-button w3-round-large w3-margin-top">Guardar Cambios</button>
+        <button type="submit" class="{{ tema }}-theme w3-button w3-round-large">Guardar Cambios</button>
       </form>
     </div>
     <div id="modalTema" class="w3-modal">

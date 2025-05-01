@@ -393,13 +393,32 @@ def config_view(request):
                            tema=config["config"]["theme"],
                            temas=temas_disponibles())
 
+def run_stable_server():
+    while True:
+        try:
+            print("Iniciando servidor...")
+            #Ejecuta el servidor del framework
+            app.run(port=config["config"]["port"],
+                    debug=eval(config["config"]["debug"]))
+        except OSError as e:
+            if e.errno == errno.ENOTCONN:
+                print("Reiniciando por error de conexión...")
+                continue
+            else:
+                print(f"Error crítico: {str(e)}")
+                break
+        except KeyboardInterrupt:
+            print("Servidor detenido manualmente")
+            break
+        except Exception as e:
+            print(f"Error inesperado: {str(e)}")
+            continue
 
 if __name__ == '__main__':
     #Carga la config del Sistema
     config = read_config()
     #Instala las apps cargadas
     app = install_apps(app)
-    #Ejecuta el servidor del framework
-    app.run(port=config["config"]["port"],
-            debug=eval(config["config"]["debug"]))
+    run_stable_server()
+
             
