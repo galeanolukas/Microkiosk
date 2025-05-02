@@ -1,5 +1,6 @@
 from utemplate import recompile
-from microdot import Microdot
+from microdot import Microdot, send_file
+import os
 import gc
 
 # Caché de loaders
@@ -40,7 +41,86 @@ def render_app_template(app_name, template, *args, **kwargs):
     try:
         gc.collect()
         return _loaders['apps'][app_name].load(template)(*args, **kwargs)
+    
     except Exception as e:
         print(f"Error en app {app_name}, template {template}: {str(e)}")
         return f"<h1>Error en template {template}</h1>"
     
+def _process_includes(html, current_app=None, *args, **kwargs):
+    """Procesa includes, buscando primero en la app actual y luego en el main"""
+    result = []
+    last_pos = 0
+    
+    while True:
+        start = html.find('{% include "', last_pos)
+        if start == -1:
+            result.append(html[last_pos:])
+            break
+            
+        end = html.find('"', start+12)
+        include_name = html[start+12:end]
+        
+        result.append(html[last_pos:start])
+        
+        try:
+            # Intentar cargar el include primero desde la app actual
+            if current_app and current_app in _loaders['apps']:
+                try:
+                    included = _loaders['apps'][current_app].load(include_name)(*args, **kwargs)
+                    result.append(included)
+                    last_pos = end + 10
+                    continue
+                except:
+                    pass  # Si falla, intentamos con el main
+            
+            # Si no está en la app o no hay app, usar el main
+            included = _loaders['main'].load(include_name)(*args, **kwargs)
+            result.append(included)
+            
+        except Exception as e:
+            print(f"Error incluyendo {include_name}: {str(e)}")
+            result.append(f"<!-- Error incluyendo {include_name} -->")
+        
+        last_pos = end + 10
+    
+    return ''.join(result)
+
+def init_static_routes(app):
+    """Decorador para manejar archivos estáticos de forma unificada"""
+    @app.route('/static/<path:path>')
+    @app.route('/<app_name>/static/<path:path>')
+    def serve_static(request, app_name=None, path=None):
+        # Determinar si es ruta de app o principal
+        if app_name:
+            static_dir = f"apps/{app_name}/static"
+        else:
+            static_dir = "static"
+        
+        # Mapeo de tipos MIME
+        mime_types = {
+            '.css': 'text/css',
+            '.js': 'application/javascript',
+            '.png': 'image/png',
+            '.jpg': 'image/jpeg',
+            '.svg': 'image/svg+xml',
+            '.woff': 'font/woff',
+            '.woff2': 'font/woff2'
+        }
+        
+        ext = os.path.splitext(path)[1].lower()
+        content_type = mime_types.get(ext, 'text/plain')
+        
+        try:
+            return send_file(os.path.join(static_dir, path), 
+                            content_type=content_type)
+        except OSError:
+            # Intentar fallback en static principal si es una app
+            if app_name:
+                try:
+                    return send_file(os.path.join('static', path),
+                                  content_type=content_type)
+                except OSError:
+                    pass
+            return 'Not found', 404
+    
+    return app

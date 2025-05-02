@@ -1,12 +1,16 @@
+# author: galeano lucas
+# version: 1.0
+# name: Reloj Digital
+# info: Reloj en tiempo real
 from microdot import Microdot, send_file
-from microdot_utemplate import render_template_app
+from microdot_utemplate import render_app_template
 import time
 
 reloj_digital = Microdot()
 
 @reloj_digital.route('/')
 def index(request):
-    return render_template_app("reloj_digital", "reloj_digital.html", appname="Reloj", modo="st")
+    return render_app_template("reloj_digital", "reloj_digital.html", appname="Reloj", modo="st")
 
 @reloj_digital.route('/time')
 def get_time(request):

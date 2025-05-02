@@ -57,44 +57,80 @@ def parse_app_metadata(app_dir):
 
 # Cargar/Actualiza las apps desde el dir apps
 def load_apps():
-    excepciones = ["__init__.py", "__pycache__"]
+    excepciones = ["__init__.py", "__pycache__", ".DS_Store", "README.md"]
     apps_info = {}
     config_json = config_manager.read_config()
+    config_apps = config_json.get("apps", {})
+    
+    # Obtener lista de apps en directorio
+    dir_apps = [d for d in os.listdir('apps') 
+               if d not in excepciones 
+               and (os.stat(join('apps', d))[0] & 0x4000)]  # Paréntesis corregido aquí
 
-    for app_dir in os.listdir('apps'):
-        if app_dir in excepciones:
-            continue
+    # Verificar apps eliminadas
+    for app_name in list(config_apps.keys()):
+        if app_name not in dir_apps:
+            print(f"App eliminada: {app_name}")
+            del config_apps[app_name]
 
+    # Procesar apps existentes/nuevas
+    for app_dir in dir_apps:
         app_path = join('apps', app_dir)
-        try:
-            if not (os.stat(app_path)[0] & 0x4000):  # Verifica si es un directorio
-                continue
-        except OSError:
+        script_file = join(app_path, f'{app_dir}.py')
+        
+        # Verificar si es una app válida (tiene archivo principal)
+        if not exists(script_file):
             continue
-
-        #Rutas de Directorios base
+            
+        # Obtener metadatos
+        metadata = parse_app_metadata(script_file)
+        app_config = config_apps.get(app_dir, {})
+        
+        # Rutas de recursos
         static_path = join(app_path, 'static')
         templates_path = join(app_path, 'templates')
-        script_file_path = join(app_path, f'{app_dir}.py')
-
-        icon_file = find_file(static_path, ['.png', '.jpg', '.jpeg']) if exists(static_path) else None
+        
+        # Buscar archivos de recursos
+        icon_file = find_file(static_path, ['.png', '.jpg', '.jpeg', '.svg', '.webp']) if exists(static_path) else None
         style_file = find_file(static_path, ['.css']) if exists(static_path) else None
         template_file = find_file(templates_path, ['.html']) if exists(templates_path) else None
-        app_config = config_json["apps"][f"{app_dir}"]
-
+        
+        # Determinar si es una app nueva o modificada
+        is_new_app = app_dir not in config_apps
+        is_modified = False
+        
+        if not is_new_app:
+            # Verificar si los archivos principales han cambiado
+            old_mtime = app_config.get('_mtime', 0)
+            current_mtime = os.stat(script_file)[8]  # st_mtime
+            is_modified = current_mtime > old_mtime
+        
+        # Actualizar información de la app
         apps_info[app_dir] = {
-            "name": parse_app_metadata(script_file_path).get("name", f"{app_dir}"),
+            "name": metadata.get("name", app_dir),
             "url": f"/{app_dir}/",
-            "icon": f"/{icon_file}" if icon_file else "/static/micropython.png",
-            "style": f"/{style_file}" if style_file else None,
-            "template": f"{template_file}" if template_file else None,
-            "author": parse_app_metadata(script_file_path).get("author", ""),
-            "info": parse_app_metadata(script_file_path).get("info", ""),
-            "version": parse_app_metadata(script_file_path).get("version", ""),
-            "fav": app_config.get("fav", False), 
+            "icon": f"/{app_dir}/static/{icon_file}" if icon_file else "/static/micropython.png",
+            "style": f"/{app_dir}/static/{style_file}" if style_file else None,
+            "template": template_file if template_file else None,
+            "author": metadata.get("author", ""),
+            "info": metadata.get("info", ""),
+            "version": metadata.get("version", ""),
+            "fav": app_config.get("fav", False),
+            "_mtime": os.stat(script_file)[8],  # Guardar timestamp de modificación
+            "_new": is_new_app,
+            "_modified": is_modified
         }
+        
+        if is_new_app:
+            print(f"Nueva app detectada: {app_dir}")
+        elif is_modified:
+            print(f"App actualizada: {app_dir}")
 
-    config_manager.update_config(None, "apps", apps_info)
+    # Actualizar configuración solo si hay cambios
+    if apps_info != config_json.get("apps", {}):
+        config_manager.update_config(None, "apps", apps_info)
+        print("Configuración de apps actualizada")
+    
     return apps_info
 
 def import_module_from_file(module_name, filepath):

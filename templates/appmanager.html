@@ -22,33 +22,58 @@
         </div>
       </form>
     </div>
-    
-    <div class="w3-row-padding w3-padding-16 w3-content">
+    <div class="w3-container w3-padding-16">
       {% if apps %}
-        {% for app in apps %}
-        <div class="w3-third w3-padding">
-          <div class="w3-card-4 w3-white w3-round-large">
-            <header class="w3-container w3-blue w3-round-top">
-              <h4 class="w3-margin-top">
-                <img src="static/micropython.png" style="height:24px; vertical-align:middle; margin-right:8px;">
-                {{ app }}
-              </h4>
-            </header>
-            <div class="w3-container w3-padding">
-              <p>Descripción de <strong>{{ app }}</strong></p>
+        <div class="w3-hide-small">
+          <table class="w3-table-all w3-card-4 w3-round-large">
+            <thead>
+              <tr class="w3-blue">
+                <th style="width:40px;"></th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Autor</th>
+                <th style="width:100px;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for app in apps %}
+              <tr class="w3-hover-light-grey">
+                <td>
+                  <img src="static/micropython.png" style="height:24px; vertical-align:middle;">
+                </td>
+                <td><strong>{{ app }}</strong></td>
+                <td>Descripción de {{ app }}</td>
+                <td>Desconocido</td>
+                <td>
+                  <a href="/{{ app }}/" class="w3-button w3-blue w3-round w3-tiny">Abrir</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="w3-hide-medium w3-hide-large">
+          <div class="w3-ul w3-card-4 w3-round-large">
+            {% for app in apps %}
+            <div class="w3-bar w3-padding w3-hover-light-grey">
+              <div class="w3-bar-item" style="width:50px;">
+                <img src="static/micropython.png" style="height:24px;">
+              </div>
+              <div class="w3-bar-item">
+                <span class="w3-large"><strong>{{ app }}</strong></span><br>
+                <span class="w3-small">Autor: Desconocido</span>
+              </div>
+              <div class="w3-bar-item w3-right">
+                <a href="/{{ app }}/" class="w3-button w3-blue w3-round w3-tiny">Abrir</a>
+              </div>
             </div>
-            <footer class="w3-container w3-light-grey w3-round-bottom">
-              <small class="w3-text-gray">Autor: desconocido</small>
-            </footer>
+            {% endfor %}
           </div>
         </div>
-        {% endfor %}
       {% else %}
-        <div class="w3-col w3-padding-32">
-          <div class="w3-panel w3-pale-yellow w3-border w3-border-yellow w3-round-large">
-            <h4><ion-icon name="information-circle-outline"></ion-icon> Aviso</h4>
-            <p class="w3-text-gray">No hay aplicaciones instaladas actualmente.</p>
-          </div>
+        <div class="w3-panel w3-pale-yellow w3-border w3-border-yellow w3-round-large">
+          <h4><ion-icon name="information-circle-outline"></ion-icon> Aviso</h4>
+          <p class="w3-text-gray">No hay aplicaciones instaladas actualmente.</p>
         </div>
       {% endif %}
     </div>

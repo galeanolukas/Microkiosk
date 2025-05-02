@@ -1,4 +1,4 @@
-<div id="AppsPanel" class="w3-hide w3-animate-top">
+<div id="AppsPanel" class="w3-hide w3-animate-top" style="height: 350px; overflow: auto;">
   <div class="w3-container w3-padding-large">
     <div class="w3-row-padding w3-center">
       {% for app in apps.values() %}
@@ -11,9 +11,8 @@
             </div>
           </div>
           <div class="w3-padding-small">
-            <span class="w3-text-white w3-small">{{ app['name'] }}</span>
+            <span class="w3-text-white">{{ app['name'] }}</span>
           </div>
-
           {% if app['fav'] == 'True' %}
           <div class="w3-display-topright w3-padding-small">
             <span class="w3-text-red">♥</span>

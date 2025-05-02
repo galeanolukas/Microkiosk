@@ -1,10 +1,9 @@
-import uasyncio as asyncio
 from microdot import Microdot, Response, redirect, send_file
 #from microdot_utemplate import render_template
 from tinydb import TinyDB, Query
 import bt_manager
 import network
-import json
+import json, errno
 import machine, os, gc, sys, re
 import tarfile
 from config_manager import read_config, update_config
@@ -56,21 +55,11 @@ def get_mem():
     return mem / 1048576
 
 #Decorador para sessiones
-def login_required(f):
-    def wrapper(request, *args, **kwargs):
-        user_cookie = request.cookies.get('user')
-
-        if not user_cookie:
-            return redirect('/')
-
-        user = db.get(User.username == user_cookie)
-        if not user:
-            return redirect('/')
-
-        # Pasamos el usuario al handler
-        request.user = user
-        return await f(request, *args, **kwargs)
-
+def login_required(view_func):
+    async def wrapper(request, *args, **kwargs):
+        if not hasattr(request, 'user'):  # Verifica si ya está autenticado
+            return redirect('/login')
+        return await view_func(request, *args, **kwargs)
     return wrapper
 
 def scan_wifi():
@@ -119,7 +108,7 @@ def temas_disponibles():
     return temas
 
 #### Vistas por defecto del SO ###
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login(request):
     error = None
     if request.method == 'POST':
@@ -141,7 +130,7 @@ def login(request):
                            modo=config["wifi"]["modo"],
                            tema=config["config"]["theme"])
     
-@app.route('/home')
+@app.route('/')
 #@login_required
 def home(request):
     board = sys.platform

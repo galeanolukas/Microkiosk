@@ -1,10 +1,9 @@
+{% arg appname, modo %}
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Funciona!!!</title>
-    <meta charset="UTF-8">
-</head>
+{% include 'head.html' %}
 <body>
+    {% include 'top_bar.html' %}
     <div class="w3-container w3-padding-32">
         <div class="w3-card-4 w3-padding">
             <h2 class="w3-center">Reloj Digital</h2>
@@ -21,5 +20,6 @@
         }
         setInterval(updateTime, 1000);
     </script>
+{% include 'footer.html' %}
 </body>
 </html>
