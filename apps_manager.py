@@ -109,7 +109,7 @@ def load_apps():
         apps_info[app_dir] = {
             "name": metadata.get("name", app_dir),
             "url": f"/{app_dir}/",
-            "icon": f"/{app_dir}/static/{icon_file}" if icon_file else "/static/micropython.png",
+            "icon": icon_file if icon_file else "/static/micropython.png",
             "style": f"/{app_dir}/static/{style_file}" if style_file else None,
             "template": template_file if template_file else None,
             "author": metadata.get("author", ""),
@@ -211,7 +211,6 @@ def install_apps(current_app):
                 # 2. Inicializar templates de la app
                 init_app_templates(app_name)
                 # 3. Copiar archivos comunes necesarios
-                copy_common_files(app_name)
                 current_app.mount(sub_app, url_prefix=f'/{app_name}')
                 print(f"✔️ App {app_name} instalada correctamente")
             else:

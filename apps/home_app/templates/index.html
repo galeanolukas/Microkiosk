@@ -1,8 +1,17 @@
-{% args msj %}
-{% extends 'base.html' %}
-{% block title %}
-APPNAME
-{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
 {% block content %}
-<h2>{{ msj }}</h2>
+  <div class="w3-card-4 w3-margin w3-white">
+    <header class="w3-container w3-blue">
+      <h1>{{ titulo }}</h1>
+    </header>
+    <div class="w3-container w3-padding">
+      <p>Bienvenido a {{ appname }} en modo {{ modo }}</p>
+    </div>
+    <footer class="w3-container w3-blue">
+      <h5>{{ appname }} - Modo: {{ modo }}</h5>
+    </footer>
+  </div>
 {% endblock %}

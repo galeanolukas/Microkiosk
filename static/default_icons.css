@@ -1,16 +1,40 @@
+/* Configuración base de iconos */
+/* static/default_icons.css */
+
 .icon {
-  --icon-color: currentColor; /* Color por defecto (hereda del padre) */
-  display: inline-block;
-  vertical-align: middle;
-  background-color: var(--icon-color);
-  width: 24px;
-  height: 24px;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  mask-size: contain;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+    --icon-color: currentColor; /* Color por defecto (hereda del padre) */
+    background-color: var(--icon-color);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+/* Reglas específicas para SVG */
+svg {
+    fill: currentColor;  /* Hereda el color del texto */
+    max-width: 100%;
+    height: auto;
+}
+
+img.icon-app {
+    width: 4em;
+    height: 4em;
+    background-color: transparent;
+}
+
+svg.icon {
+    width: 1em;
+    height: 1em;
+    stroke-width: 0;
+    stroke: currentColor;
+    fill: currentColor;
 }
 
 /* Tamaños alternativos */

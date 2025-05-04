@@ -1,0 +1,50 @@
+{% args appname, modo, temperatura, tema %}
+<!DOCTYPE html>
+<html>
+<body class="{{ tema }}-theme">
+  <div class="w3-container w3-padding-16 w3-center">
+    <div class="w3-card-4 w3-round-large w3-padding-32 w3-margin-bottom">
+      <header class="w3-container w3-blue">
+        <h2>Monitor de Temperatura</h2>
+      </header>
+
+      <div class="w3-padding">
+        <div class="w3-jumbo" id="temperatureDisplay">{{ temperatura }}°C</div>
+        <div class="w3-light-grey w3-round-large w3-margin-top" style="height:20px">
+          <div id="tempBar" class="w3-container w3-blue w3-round-large"
+               style="height:20px; width:{% widthratio temperatura 50 100 %}%"></div>
+        </div>
+        <p class="w3-small">Actualizado: <span id="lastUpdate"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateTemperature() {
+      fetch('/temp')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('temperatureDisplay').textContent = data.temperature + '°C';
+          document.getElementById('tempBar').style.width = (data.temperature / 50 * 100) + '%';
+
+          // Actualizar color según temperatura
+          if(data.temperature > 30) {
+            document.getElementById('tempBar').className = 'w3-container w3-red w3-round-large';
+          } else if(data.temperature > 20) {
+            document.getElementById('tempBar').className = 'w3-container w3-orange w3-round-large';
+          } else {
+            document.getElementById('tempBar').className = 'w3-container w3-blue w3-round-large';
+          }
+
+          // Mostrar hora de actualización
+          const now = new Date();
+          document.getElementById('lastUpdate').textContent = now.toLocaleTimeString();
+        });
+    }
+
+    // Actualizar cada 5 segundos
+    setInterval(updateTemperature, 5000);
+    updateTemperature(); // Primera actualización
+  </script>
+</body>
+</html>

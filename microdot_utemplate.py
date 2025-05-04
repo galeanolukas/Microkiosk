@@ -46,45 +46,6 @@ def render_app_template(app_name, template, *args, **kwargs):
         print(f"Error en app {app_name}, template {template}: {str(e)}")
         return f"<h1>Error en template {template}</h1>"
     
-def _process_includes(html, current_app=None, *args, **kwargs):
-    """Procesa includes, buscando primero en la app actual y luego en el main"""
-    result = []
-    last_pos = 0
-    
-    while True:
-        start = html.find('{% include "', last_pos)
-        if start == -1:
-            result.append(html[last_pos:])
-            break
-            
-        end = html.find('"', start+12)
-        include_name = html[start+12:end]
-        
-        result.append(html[last_pos:start])
-        
-        try:
-            # Intentar cargar el include primero desde la app actual
-            if current_app and current_app in _loaders['apps']:
-                try:
-                    included = _loaders['apps'][current_app].load(include_name)(*args, **kwargs)
-                    result.append(included)
-                    last_pos = end + 10
-                    continue
-                except:
-                    pass  # Si falla, intentamos con el main
-            
-            # Si no está en la app o no hay app, usar el main
-            included = _loaders['main'].load(include_name)(*args, **kwargs)
-            result.append(included)
-            
-        except Exception as e:
-            print(f"Error incluyendo {include_name}: {str(e)}")
-            result.append(f"<!-- Error incluyendo {include_name} -->")
-        
-        last_pos = end + 10
-    
-    return ''.join(result)
-
 def init_static_routes(app):
     """Decorador para manejar archivos estáticos de forma unificada"""
     @app.route('/static/<path:path>')

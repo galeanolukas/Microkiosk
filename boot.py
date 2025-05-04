@@ -7,21 +7,15 @@ import usocket
 import utime
 import time
 import os
-from config_manager import *
+from config_manager import init_config, read_config
 
 # Replace the following with your WIFI Credentials
 lrgb_ob = Pin(2, Pin.OUT, value=0)
 lrgb_ob.off()
-
-#SSID = "AP_ESP32"
-#SSI_PASSWORD = "G4l34n0L"
-
 #Iniciar la configuracion
 init_config()
 #Leer la configuracion
 config = read_config()
-# Iniciar Bluetooth si está habilitado en config.json
-#bt.iniciar(config["bt"])
 
 def blink():
     lrgb_ob.on()
@@ -75,8 +69,7 @@ def do_connect(SSID, SSI_PASSWORD, wifi_config):
     print('IP:', sta_if.ifconfig())
     
     
-if config["wifi"]["modo"] == "ap":
+if config["wifi"].get("modo", "") == "ap":
     do_ap_connect(config["wifi"]["ssid"], config["wifi"]["password"])
 else:
     do_connect(config["wifi"]["ssid"], config["wifi"]["password"], config["wifi"])
-

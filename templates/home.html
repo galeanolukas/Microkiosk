@@ -4,7 +4,7 @@
 {% include 'head.html' %}
 {% include 'navbar.html' %}
 <body class="{{ tema }}-theme">
-  <main id="main" class="w3-content w3-center">
+  <main id="main" class="w3-conteiner w3-center w3-margin">
     {% include 'menu.html' %}
     <h5><span class="icon icon-heart icon-lg icon-red"></span> FAVORITOS</h5>
       {% for app in apps.values() %}
@@ -13,7 +13,7 @@
         <a href="/{{ app['name'] }}/" class="w3-card-4 w3-hover w3-white w3-round-large" style="text-decoration:none;">
           <div class="w3-container w3-padding">
               {% if app["icon"] %}
-              <img src="{{ app['icon'] }}" alt="Icono" style="width:80px; height:80px;">
+              <img class="icon-app" src="{{ app['icon'] }}" alt="Icono {{ app['name'] }}">
               {% else %}
               <i class="icon-apps"></i>
               {% endif %}

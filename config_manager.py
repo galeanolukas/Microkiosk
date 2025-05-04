@@ -27,20 +27,17 @@ def init_config():
             "theme": "light"
         }
     }
-
     # Si no existe, crear config con valores por defecto
     if CONFIG_FILE not in os.listdir():
         with open(CONFIG_FILE, "w") as f:
             json.dump(default_config, f)
         return
-
     # Si existe, cargar y completar claves faltantes
     try:
         with open(CONFIG_FILE) as f:
             config = json.load(f)
     except:
         config = {}
-
     # Completar claves principales y subclaves
     for key, default_value in default_config.items():
         if key not in config:
@@ -52,7 +49,6 @@ def init_config():
     # Guardar el archivo actualizado
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f)
-
 
 def read_config():
     """Leer el archivo de configuración actual."""

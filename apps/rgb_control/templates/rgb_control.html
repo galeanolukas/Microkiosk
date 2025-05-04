@@ -1,73 +1,57 @@
+{% args appname, modo %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Control LED RGB</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/static/w3.css">
-    <style>
-        .color-preview {
-            width: 100%;
-            height: 100px;
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-        .slider-container {
-            margin: 15px 0;
-        }
-        .slider {
-            width: 100%;
-        }
-        .preset-btn {
-            margin: 5px;
-            width: 80px;
-        }
-    </style>
 </head>
 <body class="w3-container">
-    <h2>Control LED RGB</h2>
+    <h2 class="w3-center">Control LED RGB</h2>
 
-    <div class="w3-card-4">
-        <div class="w3-container w3-blue">
+    <div class="w3-card-4 w3-margin-bottom">
+        <header class="w3-container w3-blue">
             <h3>Ajuste Manual</h3>
-        </div>
+        </header>
 
         <div class="w3-padding">
-            <div id="colorPreview" class="color-preview"></div>
+            <div id="colorPreview" class="w3-border w3-margin-bottom" style="height:100px"></div>
 
-            <div class="slider-container">
+            <div class="w3-margin-bottom">
                 <label>Rojo: <span id="rValue">0</span></label>
                 <input type="range" min="0" max="255" value="0"
-                       class="slider w3-blue" id="rSlider">
+                       class="w3-input w3-blue" id="rSlider">
             </div>
 
-            <div class="slider-container">
+            <div class="w3-margin-bottom">
                 <label>Verde: <span id="gValue">0</span></label>
                 <input type="range" min="0" max="255" value="0"
-                       class="slider w3-green" id="gSlider">
+                       class="w3-input w3-green" id="gSlider">
             </div>
 
-            <div class="slider-container">
+            <div class="w3-margin-bottom">
                 <label>Azul: <span id="bValue">0</span></label>
                 <input type="range" min="0" max="255" value="0"
-                       class="slider w3-indigo" id="bSlider">
+                       class="w3-input w3-indigo" id="bSlider">
             </div>
 
-            <button class="w3-button w3-black" onclick="updateColor()">Aplicar</button>
+            <button class="w3-button w3-black w3-block" onclick="updateColor()">Aplicar</button>
         </div>
     </div>
 
-    <div class="w3-card-4 w3-margin-top">
-        <div class="w3-container w3-blue">
+    <div class="w3-card-4">
+        <header class="w3-container w3-blue">
             <h3>Presets Rápidos</h3>
-        </div>
-        <div class="w3-padding">
-            <button class="w3-button preset-btn w3-red" onclick="setPreset('red')">Rojo</button>
-            <button class="w3-button preset-btn w3-green" onclick="setPreset('green')">Verde</button>
-            <button class="w3-button preset-btn w3-blue" onclick="setPreset('blue')">Azul</button>
-            <button class="w3-button preset-btn w3-yellow" onclick="setPreset('yellow')">Amarillo</button>
-            <button class="w3-button preset-btn w3-purple" onclick="setPreset('purple')">Morado</button>
-            <button class="w3-button preset-btn w3-white" onclick="setPreset('white')">Blanco</button>
-            <button class="w3-button preset-btn w3-black" onclick="setPreset('off')">Apagar</button>
+        </header>
+
+        <div class="w3-padding w3-center">
+            <button class="w3-button w3-red" onclick="setPreset('red')">Rojo</button>
+            <button class="w3-button w3-green" onclick="setPreset('green')">Verde</button>
+            <button class="w3-button w3-blue" onclick="setPreset('blue')">Azul</button>
+            <button class="w3-button w3-yellow" onclick="setPreset('yellow')">Amarillo</button>
+            <button class="w3-button w3-purple" onclick="setPreset('purple')">Morado</button>
+            <button class="w3-button w3-white w3-border" onclick="setPreset('white')">Blanco</button>
+            <button class="w3-button w3-black" onclick="setPreset('off')">Apagar</button>
         </div>
     </div>
 
@@ -81,8 +65,7 @@
             document.getElementById('gValue').textContent = g;
             document.getElementById('bValue').textContent = b;
 
-            document.getElementById('colorPreview').style.backgroundColor =
-                `rgb(${r}, ${g}, ${b})`;
+            document.getElementById('colorPreview').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
         }
 
         function updateColor() {
@@ -92,31 +75,22 @@
 
             fetch('/rgb_control/set', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({r, g, b})
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+            }).then(response => response.json())
+              .then(data => console.log(data))
+              .catch(error => console.error('Error:', error));
         }
 
         function setPreset(preset) {
             fetch(`/rgb_control/preset/${preset}`)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 if(data.status === 'ok') {
-                    // Actualizar sliders según el preset
                     const colors = {
-                        'red': [255, 0, 0],
-                        'green': [0, 255, 0],
-                        'blue': [0, 0, 255],
-                        'yellow': [255, 255, 0],
-                        'purple': [128, 0, 128],
-                        'white': [255, 255, 255],
-                        'off': [0, 0, 0]
+                        'red': [255, 0, 0], 'green': [0, 255, 0], 'blue': [0, 0, 255],
+                        'yellow': [255, 255, 0], 'purple': [128, 0, 128],
+                        'white': [255, 255, 255], 'off': [0, 0, 0]
                     };
 
                     if(colors[preset]) {

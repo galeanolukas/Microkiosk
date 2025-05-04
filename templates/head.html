@@ -1,12 +1,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="static/w3.css">
-  <link rel="stylesheet" href="static/default_icons.css">
-  <link rel="stylesheet" href="static/default_theme.css">
-  {% if modo == "st" %}
-  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-  {% endif %}
-  <title>MICROKIOS | {{ appname }}</title>
+    {% if modo == "ap" %}
+    <link rel="stylesheet" href="/static/w3.css">
+    {% else %}
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+    {% endif %}        
+    <link rel="stylesheet" href="/static/default_theme.css">
+    <link rel="stylesheet" href="/static/default_icons.css">
+    <title>MICROKIOS | {{ appname }}</title>
 </head>

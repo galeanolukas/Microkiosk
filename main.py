@@ -29,17 +29,6 @@ if not users.contains(User.username == 'admin'):
 config = read_config()
 lista_apps = config["apps"]
 
-def protect_server(func):
-    def wrapper(request):
-        try:
-            return func(request)
-        except OSError as e:
-            if e.errno in [113, 104]:  # ECONNABORTED/ECONNRESET
-                print(f"Conexión interrumpida: {request.path}")
-                return Response("", status=204)
-            raise
-    return wrapper
-
 @app.route('/debug/memoria')
 def debug_memoria(request):
     import gc
@@ -165,15 +154,34 @@ def get_content_type(filename):
         return 'application/javascript'
     elif filename.endswith('.png'):
         return 'image/png'
+    elif filename.endswith('.jpg') or filename.endswith('.jpeg'):
+        return 'image/jpg'
     return 'application/octet-stream'
 
 @app.route('/static/<path:path>')
-def static(request, path):
-    if '..' in path:
-        # directory traversal is not allowed
-        return 'Not found', 404
+@app.route('/apps/<app_name>/static/<path:path>')
+def serve_static(request, app_name=None, path=None):
+    # Determinar directorio base
+    if app_name:
+        base_dir = f'apps/{app_name}/static'
+    else:
+        base_dir = 'static'
     
-    return send_file(f"static/{path}", content_type=get_content_type(path))
+    file_path = f'{base_dir}/{path}'
+    
+    try:
+        # Verificar existencia
+        os.stat(file_path)
+        return send_file(file_path, content_type=get_content_type(path))
+    except OSError as e:
+        print(f"Error al servir {file_path}: {e}")
+        # Intentar fallback para apps
+        if app_name:
+            try:
+                return send_file(f'static/{path}', content_type=get_content_type(path))
+            except OSError:
+                pass
+        return "Not found", 404
 
 @app.route('/appm', methods=["GET", "POST"])
 def app_manager(request):
@@ -197,7 +205,6 @@ def app_manager(request):
                     app_name = tar.getnames()[0].split('/')[0]
             else:
                 return render_template('appmanager.html',
-                                       titulo="APPMANAGER",
                                        appname="APPS MANAGER",
                                        modo=config["wifi"]["modo"],
                                        apps=config["apps"],
@@ -217,11 +224,11 @@ def app_manager(request):
                 import shutil
                 shutil.rmtree(f"apps/{app_name}")
                 return render_template('global', 'appmanager.html',
-                                       titulo="APPMANAGER",
                                        appname="APPS MANAGER",
                                        modo=config["wifi"]["modo"],
                                        apps=config["apps"],
-                                       msj=f"Error en la app: {mensaje}")
+                                       msj=f"Error en la app: {mensaje}",
+                                       tema=config["config"]["theme"])
 
             # Registrar y montar app
             if app_name and app_name not in config["apps"]:
@@ -235,11 +242,12 @@ def app_manager(request):
             return redirect('/appm')
 
     return render_template('appmanager.html',
-                           titulo="APPMANAGER",
                            appname="APPS MANAGER",
                            modo=config["wifi"]["modo"],
                            apps=config["apps"],
-                           msj=None)
+                           msj=None,
+                           tema=config["config"]["theme"]
+                           )
 
 @app.route('/reiniciar', methods=["GET", "POST"])
 def reiniciar(request):
@@ -409,5 +417,3 @@ if __name__ == '__main__':
     #Instala las apps cargadas
     app = install_apps(app)
     run_stable_server()
-
-            
