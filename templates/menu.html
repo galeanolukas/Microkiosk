@@ -3,8 +3,15 @@
     <div class="w3-row-padding w3-center">
       {% for app in apps.values() %}
       <div class="w3-col s4 m4 l4 w3-padding">
-        <a href="{{ app['url'] }}" class="w3-button w3-round-large w3-hover-opacity w3-hover-text-white">
-
+        <a class="w3-button w3-display-topright w3-padding-small">
+          {% if app['fav'] == 'True' %}
+          <span class="icon icon-heart icon-red icon-sm"></span>
+          {% else %}
+          <span class="icon icon-heart icon-gray icon-sm"></span>
+          {% endif %}
+        </a>
+        <a href="{{ app['url'] }}"
+        class="w3-button w3-round-large w3-hover-opacity w3-hover-text-white" stye="max-width:100px;">
           <div class="w3-padding-16">
             <div class="w3-circle">
               <img class="icon-app" src="{{ app['icon'] }}" alt="Icono {{ app['name'] }}" class="w3-image">
@@ -13,11 +20,6 @@
           <div class="w3-padding-small">
             <span class="w3-text-white">{{ app['name'] }}</span>
           </div>
-          {% if app['fav'] == 'True' %}
-          <div class="w3-display-topright w3-padding-small">
-            <span class="w3-text-red">♥</span>
-          </div>
-          {% endif %}
         </a>
       </div>
       {% endfor %}

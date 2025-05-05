@@ -57,6 +57,10 @@ svg.icon {
   --icon-color: black;
 }
 
+.icon-gray {
+  --icon-color: gray;
+}
+
 .icon-blue {
   --icon-color: #2196F3;
 }
@@ -64,6 +68,7 @@ svg.icon {
 .icon-red {
   --icon-color: #F44336;
 }
+
 
 .icon-local img{
   display: inline-block;
@@ -135,9 +140,9 @@ svg.icon {
   mask-image: url('/static/icons/alert-circle.svg');
 }
 
-.icon-caret-down {
-  -webkit-mask-image: url('/static/icons/down.svg');
-  mask-image: url('/static/icons/down.svg');
+.icon-down {
+  -webkit-mask-image: url('/static/icons/chevron-down.svg');
+  mask-image: url('/static/icons/chevron-down.svg');
 }
 
 .icon-disk {
@@ -203,4 +208,9 @@ svg.icon {
 .icon-help {
   -webkit-mask-image: url('/static/icons/help-circle.svg');
   mask-image: url('/static/icons/help-circle.svg');
+}
+
+.icon-sidebar {
+  -webkit-mask-image: url('/static/icons/sidebar.svg');
+  mask-image: url('/static/icons/sidebar.svg');
 }

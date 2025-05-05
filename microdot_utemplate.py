@@ -9,6 +9,23 @@ _loaders = {
     'apps': {}     # Diccionario de loaders por app
 }
 
+# Cache de templates base
+base_templates_cache = {}
+# In your microdot_utemplate.py
+def load_base_templates():
+    base_templates = ['head', 'footer', 'top_bar']
+    for tpl in base_templates:
+        try:
+            with open(f'templates/{tpl}.html', 'r') as f:
+                base_templates_cache[tpl] = f.read()
+            print(f"{tpl}.html guardado en cache")
+            print(base_templates_cache[tpl])
+        except Exception as e:
+            print(f"Error cargando template base {tpl}: {e}")
+            base_templates_cache[tpl] = f"<!-- Error cargando {tpl} -->"
+            
+    return base_templates_cache
+
 def init_templates(main_template_dir='templates', loader_class=recompile.Loader):
     """Inicializa el sistema de templates para el directorio principal y apps"""
     global _loaders

@@ -4,38 +4,43 @@
 {% include 'head.html' %}
 {% include 'navbar.html' %}
 <body class="{{ tema }}-theme">
-  <main id="main" class="w3-conteiner w3-center w3-margin">
-    {% include 'menu.html' %}
-    <h5><span class="icon icon-heart icon-lg icon-red"></span> FAVORITOS</h5>
-      {% for app in apps.values() %}
-      {% if app["fav"] == "True" %}
+  <main id="main" class="w3-container w3-center w3-margin">
+  {% include 'menu.html' %}
+  <div class="w3-card w3-center w3-round-large w3-padding w3-border" style='height:200px;'>
+  <h5><span class="icon icon-heart icon-lg icon-red"></span> FAVORITOS</h5>
+  {% set favorite_count = 0 %}
+  {% for app in apps.values() %}
+    {% if app["fav"] == "True" %}
+      {% set favorite_count = favorite_count + 1 %}
       <div class="w3-third w3-padding">
         <a href="/{{ app['name'] }}/" class="w3-card-4 w3-hover w3-white w3-round-large" style="text-decoration:none;">
           <div class="w3-container w3-padding">
-              {% if app["icon"] %}
+            {% if app["icon"] %}
               <img class="icon-app" src="{{ app['icon'] }}" alt="Icono {{ app['name'] }}">
-              {% else %}
+            {% else %}
               <i class="icon-apps"></i>
-              {% endif %}
-              <h5 class="w3-text-black">{{ app['name'] }}</h5>
-          <footer class="w3-container w3-center w3-light-grey w3-round-bottom">
-            <p>{{ app['info'] }}</p>
-            <br>
-            <p>{{ app['version'] }}</p>
-            <hr>
-            <small class="w3-text-gray">by {{ app['author'] }}</small>
-          </footer>
-        </div>
-      </a>
-    </div>
-    {% else %}
-    <div class="w3-container w3-padding w3-margin-top">
-      <div class="w3-card-4 w3-light-gray w3-round-large">
-        <h4>No tenes apps favoritas</h4>
+            {% endif %}
+            <h5 class="w3-text-black">{{ app['name'] }}</h5>
+            <footer class="w3-container w3-center w3-light-grey w3-round-bottom">
+              <p>{{ app['info'] }}</p>
+              <br>
+              <p>{{ app['version'] }}</p>
+              <hr>
+              <small class="w3-text-gray">by {{ app['author'] }}</small>
+            </footer>
+          </div>
+        </a>
       </div>
-    </div>
     {% endif %}
-    {% endfor %}
+  {% endfor %}
+  {% if favorite_count == 0 %}
+      <span style="vertical-align:middle">:( No hay aplicaciones favoritas</span>
+      <br>
+      <button class="w3-button w3-margin w3-round-large" onclick="toggleAppsMenu()">
+        <span class="icon icon-down icon-white icon-lg"></span>
+      </button>
+  {% endif %}
+  </div>
       <div class="w3-container w3-padding w3-gray w3-margin-top">
         <h5>{{ board }} HARDWARE</h5>
         <p>Memoria Disponible</p>

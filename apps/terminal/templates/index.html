@@ -1,0 +1,28 @@
+{% args titulo %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ titulo }}</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="static/term.css">
+</head>
+<body>
+    <div class="w3-container">
+        <h2 class="w3-text-blue">{{ titulo }}</h2>
+
+        <div class="w3-card">
+            <div id="terminal-output" class="term-output"></div>
+            <div class="w3-bar">
+                <input id="terminal-input" class="w3-input w3-border term-input"
+                       type="text" placeholder="Ingresa comando...">
+                <button class="w3-button w3-blue" onclick="Terminal.execute()">
+                    Ejecutar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/term.js"></script>
+</body>
+</html>

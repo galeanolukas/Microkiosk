@@ -1,0 +1,22 @@
+/* Estilos mínimos para la terminal */
+.term-output {
+    font-family: monospace;
+    white-space: pre-wrap;
+    height: 60vh;
+    overflow-y: auto;
+    background: #000;
+    color: #0f0;
+    padding: 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.term-input {
+    width: 85% !important;
+    font-family: monospace !important;
+}
+
+/* Colores para sintaxis */
+.cmd { color: #4fc3f7; }
+.err { color: #ff5252; }
+.out { color: #a5d6a7; }
