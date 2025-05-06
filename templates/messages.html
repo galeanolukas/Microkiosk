@@ -1,0 +1,60 @@
+{% args title, message, details, message_class, button_class, action, new_ip, redirect_url, button_text %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mensaje del Sistema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/w3.css">
+    <style>
+        .w3-card { max-width: 600px; margin: 2rem auto; }
+        .blink { animation: blink-animation 1s steps(2, start) infinite; }
+        @keyframes blink-animation { to { visibility: hidden; } }
+    </style>
+</head>
+<body class="w3-container">
+    <div class="w3-card w3-padding">
+        <header class="w3-container {{ message_class }}">
+            <h3>{{ title }}</h3>
+        </header>
+        
+        <div class="w3-container w3-padding">
+            <p>{{ message }}</p>
+            {% if details %}
+            <pre class="w3-light-grey w3-padding">{{ details }}</pre>
+            {% endif %}
+            
+            {% if action == 'reconnect' %}
+            <div class="w3-panel w3-pale-blue w3-leftbar w3-border-blue">
+                <p>
+                    <span class="w3-large blink">➤</span> 
+                    Conéctese a la nueva dirección: 
+                    <strong>{{ new_ip }}</strong>
+                </p>
+                <p id="countdown">Redireccionando en 10 segundos...</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <footer class="w3-container w3-padding">
+            <button onclick="window.location.href='{{ redirect_url }}'" 
+                    class="w3-button {{ button_class }}">
+                {{ button_text }}
+            </button>
+        </footer>
+    </div>
+    {% if action == 'reconnect' %}
+    <script>
+        let count = 10;
+        const countdown = setInterval(() => {
+            count--;
+            document.getElementById('countdown').textContent = 
+                `Redireccionando en ${count} segundos...`;
+            if (count <= 0) {
+                clearInterval(countdown);
+                window.location.href = "http://{{ new_ip }}";
+            }
+        }, 1000);
+    </script>
+    {% endif %}
+</body>
+</html>

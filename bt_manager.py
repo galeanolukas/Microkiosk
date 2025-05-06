@@ -1,7 +1,5 @@
 import bluetooth
 import time
-import uasyncio as asyncio
-
 # GLOBAL: Lista de dispositivos encontrados
 devices_found = []
 

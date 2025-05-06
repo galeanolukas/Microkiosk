@@ -2,7 +2,7 @@ import json
 import os, gc
 import tarfile
 import config_manager
-from microdot_utemplate import init_app_templates, init_static_routes
+from microkiosck_utemplate import init_app_templates, init_static_routes
 
 def exists(path):
     """Reemplazo de os.path.exists para MicroPython."""
@@ -209,7 +209,7 @@ def install_apps(current_app):
             if module and app_name in module:
                 sub_app = module[app_name]
                 # 2. Inicializar templates de la app
-                init_app_templates(app_name)
+                #init_app_templates(app_name)
                 # 3. Copiar archivos comunes necesarios
                 current_app.mount(sub_app, url_prefix=f'/{app_name}')
                 print(f"✔️ App {app_name} instalada correctamente")

@@ -3,7 +3,7 @@
 # name: Terminal MicroPython
 # info: Consola de Micropython
 from microdot import Microdot, Response, send_file
-from microdot_utemplate import render_app_template
+from microkiosck_utemplate import render_app_template
 import gc
 
 terminal = Microdot()
@@ -14,37 +14,38 @@ class TerminalBuffer:
         self.lines = []
         
     def add_output(self, text):
-        """Añade texto al buffer sin redirección"""
+        """Añade texto al buffer"""
         lines = text.splitlines()
         for line in lines:
-            if len(self.lines) >= self.max_lines:
-                self.lines.pop(0)
-            self.lines.append(line)
-            gc.collect()
+            if line.strip():  # Ignorar líneas vacías
+                if len(self.lines) >= self.max_lines:
+                    self.lines.pop(0)
+                self.lines.append(line)
+        gc.collect()
     
     def get_output(self, last_n=20):
         """Obtiene las últimas líneas"""
         return '\n'.join(self.lines[-last_n:])
 
-# Instancia global del buffer
 terminal_buffer = TerminalBuffer()
 
-# Decorador para capturar salida (alternativa a redirección)
-def capture_output(func):
-    def wrapper(*args, **kwargs):
-        import io
-        buf = io.StringIO()
+def execute_command(command):
+    """Ejecuta un comando y captura el output manualmente"""
+    result = None
+    error = None
+    
+    try:
+        # Intenta evaluar primero (para expresiones)
         try:
-            # MicroPython no permite redirección global, 
-            # así que capturamos por función
-            result = func(*args, **kwargs)
-            output = buf.getvalue()
-            if output:
-                terminal_buffer.add_output(output)
-            return result
-        finally:
-            buf.close()
-    return wrapper
+            result = eval(command, globals(), {})
+        except SyntaxError:
+            # Si falla eval, probamos con exec
+            exec(command, globals(), {})
+            
+    except Exception as e:
+        error = f"Error: {type(e).__name__}: {str(e)[:100]}"
+    
+    return result, error
 
 @terminal.route('/')
 def index(request):
@@ -62,26 +63,20 @@ def exec_command(request):
     # Registrar el comando
     terminal_buffer.add_output(f">>> {command}")
     
-    try:
-        # Ejecutar con captura local
-        @capture_output
-        def execute():
-            try:
-                result = eval(command, globals(), {})
-                if result is not None:
-                    print(result)  # Será capturado por el decorador
-            except SyntaxError:
-                exec(command, globals(), {})
-        
-        execute()
-        
-    except Exception as e:
-        terminal_buffer.add_output(f"Error: {type(e).__name__}: {str(e)[:100]}")
+    # Ejecutar el comando
+    result, error = execute_command(command)
+    
+    if error:
+        terminal_buffer.add_output(error)
+        return {'status': 'error', 'output': terminal_buffer.get_output(), 'error': error}
+    
+    if result is not None:
+        terminal_buffer.add_output(str(result))
     
     gc.collect()
-    return terminal_buffer.get_output()
+    return {'status': 'success', 'output': terminal_buffer.get_output()}
 
 @terminal.route('/output')
 def get_output(request):
     """Obtiene el output actual"""
-    return terminal_buffer.get_output()
+    return {'output': terminal_buffer.get_output()}

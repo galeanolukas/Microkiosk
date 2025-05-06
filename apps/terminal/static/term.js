@@ -1,68 +1,71 @@
-// Terminal Manager Ultra-Optimizado
 const Terminal = {
     init() {
         this.output = document.getElementById('terminal-output');
         this.input = document.getElementById('terminal-input');
         this.history = [];
-        this.pos = -1;
+        this.historyPos = -1;
 
         this.input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') this.execute();
-            else if (e.key === 'ArrowUp') this.nav(-1);
-            else if (e.key === 'ArrowDown') this.nav(1);
+            if (e.key === 'Enter') {
+                this.execute();
+                e.preventDefault();
+            } else if (e.key === 'ArrowUp') {
+                this.navHistory(-1);
+                e.preventDefault();
+            } else if (e.key === 'ArrowDown') {
+                this.navHistory(1);
+                e.preventDefault();
+            }
         });
 
-        this.update();
-        setInterval(() => this.update(), 1000);
-    },
-
-    async update() {
-        try {
-            const res = await fetch('/apps/terminal/output');
-            const data = await res.json();
-            this.output.innerHTML = this.formatOutput(data.output);
-            this.output.scrollTop = this.output.scrollHeight;
-        } catch (e) {
-            console.error('Error updating terminal:', e);
-        }
-    },
-
-    formatOutput(text) {
-        return text.split('\n').map(line => {
-            if (line.startsWith(">>> ")) {
-                return `<span class="cmd">${line}</span>`;
-            } else if (line.startsWith("Error:")) {
-                return `<span class="err">${line}</span>`;
-            }
-            return `<span class="out">${line}</span>`;
-        }).join('\n');
+        setInterval(() => this.updateOutput(), 1000);
     },
 
     async execute() {
-        const cmd = this.input.value.trim();
-        if (!cmd) return;
-
-        this.history.push(cmd);
-        this.pos = this.history.length;
-
+        const command = this.input.value.trim();
+        if (!command) return;
+        
+        this.history.push(command);
+        this.historyPos = this.history.length;
+        this.input.value = '';
+        
         try {
-            await fetch('/apps/terminal/exec', {
+            const response = await fetch('/terminal/exec', {
                 method: 'POST',
-                body: cmd
+                headers: {'Content-Type': 'text/plain'},
+                body: command
             });
-            this.input.value = '';
-            this.update();
-        } catch (e) {
-            console.error('Execution error:', e);
+            
+            const data = await response.json();
+            this.displayOutput(data.output);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            this.displayOutput(`Error: ${error.message}`);
         }
     },
 
-    nav(dir) {
+    async updateOutput() {
+        try {
+            const response = await fetch('/terminal/output');
+            const data = await response.json();
+            this.displayOutput(data.output);
+        } catch (error) {
+            console.error('Update error:', error);
+        }
+    },
+
+    displayOutput(text) {
+        this.output.textContent = text;
+        this.output.scrollTop = this.output.scrollHeight;
+    },
+
+    navHistory(direction) {
         if (!this.history.length) return;
-        this.pos = Math.max(0, Math.min(this.history.length-1, this.pos + dir));
-        this.input.value = this.history[this.pos] || '';
+        this.historyPos = Math.max(0, 
+            Math.min(this.history.length - 1, this.historyPos + direction));
+        this.input.value = this.history[this.historyPos] || '';
     }
 };
 
-// Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', () => Terminal.init());

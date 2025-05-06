@@ -1,5 +1,4 @@
 from microdot import Microdot, Response, redirect, send_file
-#from microdot_utemplate import render_template
 from tinydb import TinyDB, Query
 import bt_manager
 import network
@@ -8,7 +7,7 @@ import machine, os, gc, sys, re
 import tarfile
 from config_manager import read_config, update_config
 from apps_manager import install_apps
-from microdot_utemplate import render_template, init_static_routes
+from microkiosck_utemplate import render_template, init_static_routes
 import socket
 import micropython
 
@@ -16,15 +15,12 @@ micropython.alloc_emergency_exception_buf(100)
 
 app = Microdot()
 #Response.default_content_type = 'text/html'
-
 db = TinyDB('users.json')
 users = db.table('users')
 User = Query()
-
 # Crear usuario admin por defecto si no existe
 if not users.contains(User.username == 'admin'):
     users.insert({'username': 'admin', 'password': 'admin'})
-
 # Cargar Configuracion guardada
 config = read_config()
 lista_apps = config["apps"]
@@ -249,6 +245,33 @@ def app_manager(request):
                            tema=config["config"]["theme"]
                            )
 
+def show_message(request, title, message, message_type='info', 
+                details=None, action=None, new_ip=None,
+                redirect_url='/', button_text='Aceptar'):
+    # Mapear tipos de mensaje a clases W3.CSS
+    type_classes = {
+        'info': ('w3-blue', 'w3-blue'),
+        'success': ('w3-green', 'w3-green'),
+        'warning': ('w3-orange', 'w3-orange'),
+        'error': ('w3-red', 'w3-red'),
+        'reconnect': ('w3-indigo', 'w3-indigo')
+    }
+    
+    message_class, button_class = type_classes.get(
+        message_type, ('w3-blue', 'w3-blue'))
+    
+    return render_template('message.html',
+        title=title,
+        message=message,
+        details=details,
+        message_class=message_class,
+        button_class=button_class,
+        action=action,
+        new_ip=new_ip,
+        redirect_url=redirect_url,
+        button_text=button_text
+    )
+
 @app.route('/reiniciar', methods=["GET", "POST"])
 def reiniciar(request):
     if request.method == "POST":
@@ -278,7 +301,6 @@ def blue(request):
         config["bt"]["mode"] = bt_mode
 
         update_config(None, "bt", config["bt"])
-
     #Inicia el dispositivo si esta habilitado
     bt_device = bt_manager.iniciar(config["bt"])
     
@@ -308,7 +330,6 @@ def wifi_conect(request):
         "appname": "WIFI MANAGER",
         "tema": config["config"]["theme"]
     }
-
     # Cargar datos actuales de la config
     if config:
         context["ssid"] = config["wifi"]["ssid"]
@@ -316,7 +337,6 @@ def wifi_conect(request):
         context["modo"] = config["wifi"]["modo"]
         if eval(config["wifi"]["ip_fija"]):
             context["ip"] = config["wifi"]["ip"]
-
     # Si es GET y hay un ssid seleccionado desde el navegador
     if request.method == "GET":
         ssid = request.args.get('n')
@@ -336,8 +356,15 @@ def wifi_conect(request):
             update_config("wifi", "password", psk)
             update_config("wifi", "modo", modo)
             update_config("wifi", "ip", ip)
-            utime.sleep(1)
-            machine.reset()
+            new_ip = read_config().get("wifi")["ip"]
+            
+            return show_message(title="Configuración Actualizada",
+                                message="La configuración de red ha sido modificada.",
+                                message_type='reconnect',
+                                action='reconnect',
+                                new_ip=new_ip,
+                                redirect_url=f'http://{new_ip}',
+                                button_text='Conectar Ahora')
         else:
             context['msj'] = "Debe completar SSID y contraseña."
             return redirect('/wifi')
@@ -362,7 +389,6 @@ def config_view(request):
             
         new_port = int(request.form.get('port'))
         new_theme = request.form.get('theme')
-
         # Comprobamos si hay cambios que requieren reinicio
         requiere_reinicio = (
             config['config']['debug'] != new_debug or

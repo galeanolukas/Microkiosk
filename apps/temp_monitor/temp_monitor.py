@@ -3,7 +3,7 @@
 # name: Monitor de Temperatura
 # info: Muestra la temperatura ambiente usando sensor de la ESP32
 from microdot import Microdot, send_file
-from microdot_utemplate import render_app_template
+from microkiosck_utemplate import render_app_template
 import time
 from machine import Pin, ADC
 

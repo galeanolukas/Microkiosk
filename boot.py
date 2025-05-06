@@ -6,9 +6,10 @@ from machine import Pin
 import usocket
 import utime
 import time
-import os
+import os, sys
 from config_manager import init_config, read_config
-
+print(os.uname())
+print(sys.version)
 # Replace the following with your WIFI Credentials
 lrgb_ob = Pin(2, Pin.OUT, value=0)
 lrgb_ob.off()
