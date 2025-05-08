@@ -2,7 +2,7 @@ import json
 import os, gc
 import tarfile
 import config_manager
-from microkiosck_utemplate import init_app_templates, init_static_routes
+from microkiosk_utemplate import init_app_templates
 
 def exists(path):
     """Reemplazo de os.path.exists para MicroPython."""

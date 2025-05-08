@@ -1,40 +1,34 @@
-<header class="{{ tema }}-theme w3-bar w3-border w3-border-white w3-large" id="header">
-  <button id="openNav" class="{{ tema }}-theme w3-bar-item w3-margin w3-button w3-hover-light-blue" onclick="toggleSidebar()">
-    <span class="icon icon-menu icon-white icon-lg"></span>
+<header class="{{ tema }}-theme w3-bar w3-border w3-large" id="header">
+  <button class="{{ tema }}-theme w3-bar-item w3-button w3-hover-light-blue" onclick="toggleSidebar()">
+    <span class="icon icon-menu"></span>
   </button>
-  <span class="w3-bar-item w3-margin w3-xlarge w3-hide-small">{{ titulo }}</span>
-  <button class="w3-bar-item w3-right w3-button w3-margin w3-round-large" onclick="toggleAppsMenu()">
-        <span class="icon icon-apps icon-white icon-lg"></span>
-        MENU APPS
+  <span class="w3-bar-item w3-hide-small">{{ titulo }}</span>
+  <button class="w3-bar-item w3-right w3-button" onclick="toggleAppsMenu()">
+    <span class="icon icon-apps"></span>
+    <span class="w3-hide-small">MENU APPS</span>
   </button>
 </header>
 
-<nav class="{{ tema }}-theme w3-sidebar w3-hide w3-bar-block w3-card w3-animate-left" style="width:250px;" id="mySidebar">
+<nav class="{{ tema }}-theme w3-sidebar w3-bar-block w3-animate-left w3-hide" style="width:250px; text-decoration: none;" id="mySidebar">
   <div class="w3-container w3-padding w3-center">
-    <span class="icon icon-cpu icon-sm icon-red"></span>{{ board }}
+    <span class="icon icon-cpu icon-red"></span>{{ sys_info["name"] }}
   </div>
-  <a href="/wifi" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
-    <span class="icon icon-wifi"></span>
-    <span>Wifi</span>
+  <a href="/wifi" class="w3-bar-item w3-hover-light-blue">
+    <span class="icon icon-wifi"></span> Wifi
   </a>
-  <a href="/bt" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
-    <span class="icon icon-bluetooth"></span>
-    <span>Bluetooth</span>
+  <a href="/bt" class="w3-bar-item w3-hover-light-blue">
+    <span class="icon icon-bluetooth"></span> Bluetooth
   </a>
-  <a href="/appm" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
-    <span class="icon icon-apps"></span>
-    <span>AppMan</span>
+  <a href="/appm" class="w3-bar-item w3-hover-light-blue">
+    <span class="icon icon-apps"></span> AppMan
   </a>
-  <a href="/config" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
-    <span class="icon icon-settings"></span>
-    <span>Configuración</span>
+  <a href="/config" class="w3-bar-item w3-hover-light-blue">
+    <span class="icon icon-settings"></span> Configuración
   </a>
-  <a href="/sobre" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
-    <span class="icon icon-info"></span>
-    <span>Sobre</span>
+  <a href="/sobre" class="w3-bar-item w3-hover-light-blue">
+    <span class="icon icon-info"></span> Sobre
   </a>
-  <a href="/reiniciar" class="w3-bar-item w3-button w3-hover-light-blue w3-large">
-    <span class="icon icon-reload"></span>
-    <span>Reiniciar</span>
+  <a href="/reiniciar" class="w3-bar-item w3-hover-light-blue">
+    <span class="icon icon-reload"></span> Reiniciar
   </a>
 </nav>

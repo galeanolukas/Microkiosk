@@ -3,7 +3,7 @@
 # name: Reloj Digital
 # info: Reloj en tiempo real
 from microdot import Microdot, send_file
-from microkiosck_utemplate import render_app_template, load_base_templates
+from microkiosk_utemplate import render_app_template, load_base_templates
 import time
 
 reloj_digital = Microdot()

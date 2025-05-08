@@ -4,85 +4,100 @@
 {% include 'head.html' %}
 <body class="{{ tema }}-theme">
   {% include 'top_bar.html' %}
-  <div class="w3-container w3-gray w3-animate-top w3-center">
-        {% if msj %}
-        <div class="w3-panel w3-red">
-          <h3>Error!</h3>
-          <p>{{ msj }}</p>
-        </div>
-        {% endif %}
-        <div class="w3-container w3-animate-bottom w3-margin w3-center">
-          <a onclick="document.getElementById('wifiModal').style.display='block'" class="{{ tema }}-theme w3-button w3-large w3-center">
-            <span class="icon icon-wifi icon-lg"></span>
-          </a>
-        </div>
-        <div class="w3-container w3-card w3-white w3-margin">
 
-            {% if msj %}
-            <div class="w3-panel w3-pale-red w3-border w3-border-red w3-round-large">
-                <p>{{ msj }}</p>
-            </div>
-            {% endif %}
+  <div class="w3-container w3-center">
+    {% if msj %}
+    <div class="w3-panel w3-red w3-round">
+      <h3>Error!</h3>
+      <p>{{ msj }}</p>
+    </div>
+    {% endif %}
 
-            <form class="w3-container w3-padding" method="POST" action="/wifi">
+    <div class="w3-margin">
+      <button onclick="document.getElementById('wifiModal').style.display='block'"
+              class="{{ tema }}-theme w3-button">
+        <span class="icon icon-wifi"></span> Ver Redes
+      </button>
+    </div>
 
-                <label class="w3-text-teal"><b>Nombre de la Red (SSID):</b></label>
-                <input class="w3-input w3-border w3-round" type="text" id="essid" name="essid" value="{{ ssid }}" required>
-                <br>
-                <label class="w3-text-teal"><b>Contraseña:</b></label>
-                <input class="w3-input w3-border w3-round" type="password" id="password" name="password" value="{{ password }}" required>
-                <button class="{{ tema }}-theme w3-btn w3-margin">Ver</button>
-                <br>
-                <label class="w3-text-teal"><b>Modo de conexión:</b></label>
-                <select class="w3-select w3-border w3-round" name="modo" id="modo">
-                    <option value="st" {% if modo == 'st' %}selected{% endif %}>Station (Cliente)</option>
-                    <option value="ap" {% if modo == 'ap' %}selected{% endif %}>Access Point (Servidor)</option>
-                </select>
-                <br>
-                <label class="w3-text-teal"><b>IP Fija (opcional):</b></label>
-                <input class="w3-input w3-border w3-round" type="text" id="ip" name="ip" value="{{ ip }}">
-                <br>
-                <button class="{{ tema }}-theme w3-button w3-margin w3-round-large w3-block" type="submit">
-                    Conectar
-                </button>
-            </form>
-      </div>
-      <div id="wifiModal" class="w3-modal" style="z-index:10;">
-        <div class="w3-modal-content w3-animate-top w3-card-4 w3-round-large">
-          <header class="w3-container w3-teal">
-            <span onclick="document.getElementById('wifiModal').style.display='none'" class="w3-button w3-display-topright">&times;</span>
-            <h3><ion-icon name="wifi-outline"></ion-icon> Redes WiFi Disponibles</h3>
-          </header>
-          <div class="w3-container w3-padding">
-            {% if redes %}
-            <ul class="w3-ul w3-hoverable">
-              {% for red in redes %}
-              <li><a class="w3-button w3-block w3-left-align w3-white" href="/wifi?n={{ red }}">{{ red }}</a></li>
-              {% endfor %}
-            </ul>
-            {% else %}
-            <div class="w3-center w3-padding-32">
-              <p class="w3-xlarge"><ion-icon name="wifi-outline"></ion-icon></p>
-              <p class="w3-text-gray">No se detectaron redes</p>
-            </div>
-            {% endif %}
+    <div class="w3-card w3-white w3-margin w3-padding">
+      <form method="POST" action="/wifi">
+        <label><b>Nombre de la Red (SSID):</b></label>
+        <input class="w3-input w3-border w3-round"
+               type="text" id="essid" name="essid"
+               value="{{ ssid }}" required>
+
+        <label class="w3-margin-top"><b>Contraseña:</b></label>
+        <div class="w3-row">
+          <div class="w3-col" style="width:80%">
+            <input class="w3-input w3-border w3-round"
+                   type="password" id="passInput"
+                   name="password" value="{{ password }}" required>
           </div>
-          <footer class="w3-container w3-light-grey w3-padding">
-            <button class="{{ tema }}-theme w3-button w3-round" onclick="location.reload();">Volver a Buscar</button>
-          </footer>
+          <div class="w3-col" style="width:20%">
+            <button type="button" onclick="showPass()"
+                    class="{{ tema }}-theme w3-button">
+              Ver
+            </button>
+          </div>
         </div>
+
+        <label class="w3-margin-top"><b>Modo de conexión:</b></label>
+        <select class="w3-select w3-border w3-round" name="modo" id="modo">
+          <option value="st" {% if modo == 'st' %}selected{% endif %}>Station (Cliente)</option>
+          <option value="ap" {% if modo == 'ap' %}selected{% endif %}>Access Point (Servidor)</option>
+        </select>
+
+        <label class="w3-margin-top"><b>IP Fija (opcional):</b></label>
+        <input class="w3-input w3-border w3-round"
+               type="text" id="ip" name="ip" value="{{ ip }}">
+
+        <button class="{{ tema }}-theme w3-button w3-margin-top w3-block"
+                type="submit">
+          Conectar
+        </button>
+      </form>
+    </div>
+
+    <div id="wifiModal" class="w3-modal">
+      <div class="w3-modal-content w3-card">
+        <header class="w3-container w3-blue">
+          <span onclick="document.getElementById('wifiModal').style.display='none'"
+                class="w3-button w3-right">&times;</span>
+          <h3><span class="icon icon-wifi"></span> Redes WiFi Disponibles</h3>
+        </header>
+        <div class="w3-container">
+          {% if redes %}
+          <div class="w3-ul">
+            {% for red in redes %}
+            <a class="w3-button w3-block w3-left-align w3-border-bottom"
+               href="/wifi?n={{ red }}">{{ red }}</a>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="w3-center w3-padding">
+            <p><span class="icon icon-wifi"></span></p>
+            <p>No se detectaron redes</p>
+          </div>
+          {% endif %}
+        </div>
+        <footer class="w3-container w3-light-grey">
+          <button class="{{ tema }}-theme w3-button"
+                  onclick="location.reload()">
+            Volver a Buscar
+          </button>
+        </footer>
       </div>
+    </div>
   </div>
+
   <script>
   function showPass() {
     var x = document.getElementById("passInput");
-    if (x.type === "password") {
-      x.type = "text";
-    } else {
-      x.type = "password";
-    }
+    x.type = (x.type === "password") ? "text" : "password";
   }
   </script>
-{% include "footer.html" %}
+
+  {% include "footer.html" %}
 </body>
 </html>

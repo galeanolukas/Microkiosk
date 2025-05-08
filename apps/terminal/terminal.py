@@ -3,7 +3,7 @@
 # name: Terminal MicroPython
 # info: Consola de Micropython
 from microdot import Microdot, Response, send_file
-from microkiosck_utemplate import render_app_template
+from microkiosk_utemplate import render_app_template
 import gc
 
 terminal = Microdot()

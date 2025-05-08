@@ -3,7 +3,7 @@
 # name: RGB Control
 # info: Controla leds rgb remotamente
 from microdot import Microdot, send_file
-from microkiosck_utemplate import render_app_template
+from microkiosk_utemplate import render_app_template
 from machine import Pin, PWM
 import time
 

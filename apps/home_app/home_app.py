@@ -1,5 +1,5 @@
 from microdot import Microdot, Response
-from microkiosck_utemplate import render_template
+from microkiosk_utemplate import render_template
 
 home_app = Microdot()
 Response.default_content_type = 'text/html'

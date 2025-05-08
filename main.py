@@ -7,11 +7,9 @@ import machine, os, gc, sys, re
 import tarfile
 from config_manager import read_config, update_config
 from apps_manager import install_apps
-from microkiosck_utemplate import render_template, init_static_routes
+from microkiosk_utemplate import render_template
 import socket
 import micropython
-
-micropython.alloc_emergency_exception_buf(100)
 
 app = Microdot()
 #Response.default_content_type = 'text/html'
@@ -23,21 +21,42 @@ if not users.contains(User.username == 'admin'):
     users.insert({'username': 'admin', 'password': 'admin'})
 # Cargar Configuracion guardada
 config = read_config()
-lista_apps = config["apps"]
 
-@app.route('/debug/memoria')
-def debug_memoria(request):
-    import gc
-    gc.collect()
+@app.route('/system_info')
+def system_info(request):
+    uname = os.uname()
     return {
-        'mem_libre': gc.mem_free(),
-        'cache_templates': len(template_cache)
+        "system": {
+            "name": uname.sysname,
+            "hostname": uname.nodename,
+            "firmware_version": uname.version,
+            "hardware": uname.machine
+        }
     }
 
-def get_mem():
-    s = os.statvfs('/')
-    mem = s[0] * s[3]
-    return mem / 1048576
+@app.route('/mem_stats')
+def mem_stats():
+    # Obtener estadísticas de memoria
+    gc.collect()  # Liberar memoria no usada antes de medir
+    mem_free = gc.mem_free()
+    mem_alloc = gc.mem_alloc()
+    mem_total = mem_free + mem_alloc
+    ram_usage_percent = (mem_alloc / mem_total) * 100
+    # Obtener información de Flash (si está disponible)
+    try:
+        flash_total = 16 * 1024 * 1024  # 16 MB (ajusta según tu micro)
+        flash_used = os.statvfs('/')[1] * os.statvfs('/')[3]  # Bloque usado * tamaño bloque
+        flash_free = flash_total - flash_used
+        flash_usage_percent = (flash_used / flash_total) * 100
+    except:
+        flash_free, flash_total, flash_usage_percent = "N/A", "N/A", "N/A"
+        
+    return {"ram_percent": round(ram_usage_percent),
+            "flash_percent": round(flash_usage_percent),
+            "ram_free": round(mem_free),
+            "flash_free": round(flash_free),
+            "ram_total": round(mem_total),
+            "flash_total": round(flash_total / 1024 * 1024)}
 
 #Decorador para sessiones
 def login_required(view_func):
@@ -116,11 +135,10 @@ def login(request):
                            tema=config["config"]["theme"])
     
 @app.route('/')
-#@login_required
 def home(request):
-    board = sys.platform
-    memoria = get_mem()
-    mem_perc = memoria * 4 / 100
+    sys_info = system_info(request)["system"]
+    memoria = mem_stats()
+    lista_apps = config.get("apps", None)
     return render_template('home.html',
                             titulo="MICROKIOSK",
                             modo=config["wifi"]["modo"],
@@ -128,9 +146,8 @@ def home(request):
                             appname="HOME",
                             apps=lista_apps,
                             mem=memoria,
-                            mem_perc=mem_perc,
                             user=User.username,
-                            board=board.upper()
+                            sys_info=sys_info
                            )
 
 @app.route('/sobre')
@@ -154,24 +171,18 @@ def get_content_type(filename):
         return 'image/jpg'
     return 'application/octet-stream'
 
+# ===== [Servidor de archivos estáticos] =====
 @app.route('/static/<path:path>')
 @app.route('/apps/<app_name>/static/<path:path>')
-def serve_static(request, app_name=None, path=None):
+def serve_static(request, path, app_name=None):
     # Determinar directorio base
-    if app_name:
-        base_dir = f'apps/{app_name}/static'
-    else:
-        base_dir = 'static'
-    
+    base_dir = f'apps/{app_name}/static' if app_name else 'static'
     file_path = f'{base_dir}/{path}'
-    
+
     try:
-        # Verificar existencia
-        os.stat(file_path)
         return send_file(file_path, content_type=get_content_type(path))
-    except OSError as e:
-        print(f"Error al servir {file_path}: {e}")
-        # Intentar fallback para apps
+    except OSError:
+        # Intentar fallback global si es una app
         if app_name:
             try:
                 return send_file(f'static/{path}', content_type=get_content_type(path))
@@ -182,18 +193,15 @@ def serve_static(request, app_name=None, path=None):
 @app.route('/appm', methods=["GET", "POST"])
 def app_manager(request):
     config = read_config()
-
     if request.method == "POST":
         uploaded_file = request.files.get('file')
         if uploaded_file:
             filename = uploaded_file.filename
             app_name = None
-
             # Guardar el archivo temporalmente
             temp_path = "/tmp/" + filename
             with open(temp_path, "wb") as f:
                 f.write(uploaded_file.read())
-
             # Detectar tipo de archivo
             if filename.endswith(".tar"):
                 with tarfile.open(temp_path, "r:r") as tar:
@@ -212,7 +220,6 @@ def app_manager(request):
                 os.remove(temp_path)
             except:
                 pass
-
             # Verificar estructura antes de registrar
             ok, mensaje = verificar_estructura_app(app_name)
             if not ok:
@@ -245,7 +252,7 @@ def app_manager(request):
                            tema=config["config"]["theme"]
                            )
 
-def show_message(request, title, message, message_type='info', 
+def show_message(title, message, message_type='info', 
                 details=None, action=None, new_ip=None,
                 redirect_url='/', button_text='Aceptar'):
     # Mapear tipos de mensaje a clases W3.CSS
@@ -340,6 +347,7 @@ def wifi_conect(request):
     # Si es GET y hay un ssid seleccionado desde el navegador
     if request.method == "GET":
         ssid = request.args.get('n')
+        
         if ssid:
             context["ssid"] = ssid
             context["password"] = ""  # limpiar password al seleccionar otra red
@@ -358,7 +366,7 @@ def wifi_conect(request):
             update_config("wifi", "ip", ip)
             new_ip = read_config().get("wifi")["ip"]
             
-            return show_message(title="Configuración Actualizada",
+            return show_message(request, title="Configuración Actualizada",
                                 message="La configuración de red ha sido modificada.",
                                 message_type='reconnect',
                                 action='reconnect',

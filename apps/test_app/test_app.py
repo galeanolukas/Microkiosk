@@ -1,5 +1,5 @@
 from microdot import Microdot, Response
-from microkiosck_utemplate import render_app_template
+from microkiosk_utemplate import render_app_template
 test_app = Microdot()
 
 @test_app.route('/')

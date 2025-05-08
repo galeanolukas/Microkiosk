@@ -5,126 +5,111 @@
 <body class="{{ tema }}-theme">
   {% include 'top_bar.html' %}
 
-  <div class="w3-container w3-padding-16">
-    <div class="w3-card w3-round-large w3-padding w3-margin-bottom w3-white">
-      <h2 class="w3-text-indigo w3-center">Cargar Nueva App</h2>
-      <form action="/upload" method="post" enctype="multipart/form-data" class="w3-row-padding">
-        <div class="w3-col s12 m6 w3-padding-small">
-          <label class="w3-button w3-blue w3-round-large w3-block">
-            <svg class="icon" width="16" height="16" style="vertical-align:middle">
-              <use href="/static/icons.svg#upload"/>
-            </svg>
-            <span style="vertical-align:middle">Seleccionar Archivo</span>
-            <input type="file" name="file_app" accept=".tar" style="display:none;">
-          </label>
-        </div>
-        <div class="w3-col s12 m6 w3-padding-small">
-          <button type="submit" class="w3-button w3-indigo w3-round-large w3-block">
-            <svg class="icon" width="16" height="16" style="vertical-align:middle">
-              <use href="/static/sprite_icons.svg#install"/>
-            </svg>
-            <span style="vertical-align:middle">INSTALAR</span>
-          </button>
+  <div class="w3-container">
+    <div class="w3-card w3-margin w3-padding">
+      <h3 class="w3-center">Cargar Nueva App</h3>
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <div class="w3-row">
+          <div class="w3-half w3-padding-small">
+            <label class="w3-button w3-blue w3-block">
+              <span class="icon icon-upload"></span> Seleccionar Archivo
+              <input type="file" name="file_app" accept=".tar" style="display:none">
+            </label>
+          </div>
+          <div class="w3-half w3-padding-small">
+            <button type="submit" class="w3-button w3-indigo w3-block">
+              <span class="icon icon-install"></span> INSTALAR
+            </button>
+          </div>
         </div>
       </form>
     </div>
 
-    <div class="w3-card w3-round-large w3-white">
-      <header class="w3-container w3-center w3-blue">
-        <h3>Aplicaciones Instaladas</h3>
+    <div class="w3-card w3-margin">
+      <header class="w3-container w3-blue">
+        <h3 class="w3-center">Aplicaciones Instaladas</h3>
       </header>
-      
+
       {% if apps %}
-      <div class="w3-container w3-padding" style="overflow-x:auto;max-height:400px;">
-        <table class="w3-table-all w3-hoverable">
-          <thead>
-            <tr class="w3-light-grey">
-              <th>App</th>
-              <th>Info</th>
-              <th>Autor</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for app in apps.values() %}
-            <tr>
-              <td>
-                <img src="{{ app['icon'] }}" 
-                     class="w3-image" style="width:24px;height:24px" alt="App Icon">
-                     <strong>{{ app["name"] }}</strong>
-              </td>
-              <td>{{ app.get("info", "No informa") }}</td>
-              <td>{{ app.get("author", "Desconocido") }}</td>
-              <td>
-                <div class="w3-cell-row">
-                  <a href="{{ app['url'] }}" class="w3-button w3-blue w3-round w3-small w3-cell">
-                    <svg class="icon" width="12" height="12">
-                      <use href="/static/icons.svg#open"/>
-                    </svg> Ver
-                  </a>
-                  <button onclick="confirmDelete('{{ app['name'] }}')" 
-                          class="w3-button w3-red w3-round w3-small w3-cell">
-                    <svg class="icon" width="12" height="12">
-                      <use href="/static/icons.svg#delete"/>
-                    </svg> Quitar
-                  </button>
-                </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
+      <div class="w3-responsive">
+        <table class="w3-table w3-bordered">
+          <tr class="w3-light-grey">
+            <th>App</th>
+            <th>Info</th>
+            <th>Autor</th>
+            <th>Acciones</th>
+          </tr>
+          {% for app in apps.values() %}
+          <tr>
+            <td>
+              {% if app["icon"] %}
+                <img src="{{ app['icon'] }}" style="width:24px;height:24px;vertical-align:middle" alt="Icono">
+              {% endif %}
+              {{ app["name"] }}
+            </td>
+            <td>{{ app.get("info", "No informa") }}</td>
+            <td>{{ app.get("author", "Desconocido") }}</td>
+            <td>
+              <a href="{{ app['url'] }}" class="w3-button w3-blue w3-tiny">
+                <span class="icon icon-open"></span> Ver
+              </a>
+              <button onclick="confirmDelete('{{ app['name'] }}')" class="w3-button w3-red w3-tiny">
+                <span class="icon icon-delete"></span> Quitar
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
         </table>
       </div>
       {% else %}
-      <div class="w3-panel w3-pale-yellow w3-round-large w3-margin">
-        <h4><svg class="icon" width="20" height="20"><use href="/static/icons.svg#info"/></svg> Aviso</h4>
-        <p>No hay aplicaciones instaladas actualmente.</p>
+      <div class="w3-panel w3-yellow">
+        <p><span class="icon icon-info"></span> No hay aplicaciones instaladas</p>
       </div>
       {% endif %}
     </div>
   </div>
 
   <div id="deleteModal" class="w3-modal">
-    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
-      <header class="w3-container w3-red"> 
-        <span onclick="document.getElementById('deleteModal').style.display='none'" 
-              class="w3-button w3-display-topright">&times;</span>
-        <h3>Confirmar Eliminación</h3>
+    <div class="w3-modal-content w3-card" style="max-width:400px">
+      <header class="w3-container w3-red">
+        <span onclick="document.getElementById('deleteModal').style.display='none'"
+              class="w3-button w3-right">&times;</span>
+        <h4>Confirmar Eliminación</h4>
       </header>
       <div class="w3-container w3-padding">
-        <p>¿Estás seguro de querer eliminar la aplicación <strong id="appToDelete"></strong>?</p>
+        <p>¿Eliminar la aplicación <strong id="appToDelete"></strong>?</p>
       </div>
-      <footer class="w3-container w3-padding w3-light-grey">
+      <footer class="w3-container w3-light-grey w3-padding">
         <button onclick="deleteApp()" class="w3-button w3-red">Eliminar</button>
-        <button onclick="document.getElementById('deleteModal').style.display='none'" 
-                class="w3-button w3-grey">Cancelar</button>
+        <button onclick="document.getElementById('deleteModal').style.display='none'"
+                class="w3-button">Cancelar</button>
       </footer>
     </div>
   </div>
 
   <script>
-    // Gestión de la eliminación
-    let currentAppToDelete = '';
-    
-    function confirmDelete(appName) {
-      document.getElementById('appToDelete').textContent = appName;
-      currentAppToDelete = appName;
-      document.getElementById('deleteModal').style.display = 'block';
-    }
-    
-    function deleteApp() {
-      fetch(`/appmanager/delete?app=${encodeURIComponent(currentAppToDelete)}`, {
-        method: 'POST'
-      }).then(response => {
-        if(response.ok) {
-          window.location.reload();
-        } else {
-          alert('Error al eliminar la aplicación');
-        }
-      });
-      document.getElementById('deleteModal').style.display = 'none';
-    }
+  let currentAppToDelete = '';
+
+  function confirmDelete(appName) {
+    document.getElementById('appToDelete').textContent = appName;
+    currentAppToDelete = appName;
+    document.getElementById('deleteModal').style.display = 'block';
+  }
+
+  function deleteApp() {
+    fetch(`/appmanager/delete?app=${encodeURIComponent(currentAppToDelete)}`, {
+      method: 'POST'
+    }).then(response => {
+      if(response.ok) {
+        window.location.reload();
+      } else {
+        alert('Error al eliminar');
+      }
+    });
+    document.getElementById('deleteModal').style.display = 'none';
+  }
   </script>
+
   {% include "footer.html" %}
 </body>
 </html>

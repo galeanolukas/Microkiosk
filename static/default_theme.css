@@ -1,3 +1,4 @@
+
 /* Estilo para el tema claro (light) */
 body.light-theme {
     background-color: white;
@@ -48,3 +49,15 @@ nav.dark-theme {
     background-color: #3e3e3e;
     color: white;
 }
+
+ @media (max-width: 600px) {
+    /* En móviles, más espacio entre elementos */
+    .w3-col.s12 {
+      margin-bottom: 16px;
+    }
+    /* Tamaño de icono más pequeño en móvil */
+    .app-icon {
+      width: 48px !important;
+      height: 48px !important;
+    }
+  }

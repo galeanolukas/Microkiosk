@@ -59,8 +59,11 @@ def do_connect(SSID, SSI_PASSWORD, wifi_config):
     if not sta_if.isconnected():
         print('Conectando a la Red...')
         sta_if.active(True)
-        sta_if.connect(SSID, SSI_PASSWORD)
-        
+        try:
+            sta_if.connect(SSID, SSI_PASSWORD)
+        except OSError as e:
+            print(f"Error al conectarse a la red: {e}")
+            pass
         # Bucle de conexión con parpadeo
         while not sta_if.isconnected():
             blink()  # Titila
@@ -68,7 +71,6 @@ def do_connect(SSID, SSI_PASSWORD, wifi_config):
     print('¡Conectado a WiFi!')
     lrgb_ob.on()  # Fijo cuando conecta
     print('IP:', sta_if.ifconfig())
-    
     
 if config["wifi"].get("modo", "") == "ap":
     do_ap_connect(config["wifi"]["ssid"], config["wifi"]["password"])

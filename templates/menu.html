@@ -1,28 +1,25 @@
-<div id="AppsPanel" class="w3-hide w3-animate-top" style="height: 350px; overflow: auto;">
-  <div class="w3-container w3-padding-large">
-    <div class="w3-row-padding w3-center">
-      {% for app in apps.values() %}
-      <div class="w3-col s4 m4 l4 w3-padding">
-        <a class="w3-button w3-display-topright w3-padding-small">
-          {% if app['fav'] == 'True' %}
-          <span class="icon icon-heart icon-red icon-sm"></span>
-          {% else %}
-          <span class="icon icon-heart icon-gray icon-sm"></span>
-          {% endif %}
+<!--Menu Panel -->
+<div id="AppsPanel" class="w3-hide w3-animate-top">
+  <div class="w3-row-padding w3-center w3-margin-top">
+    {% for app in apps.values() %}
+    <!-- Cada tarjeta ocupa 12 columnas en móvil (100%), 4 en desktop (33.33%) -->
+    <div class="w3-third">
+      <div class="w3-card w3-container w3-padding" style="min-height:150px;">
+        <!-- Botón favorito -->
+        <button class="w3-button w3-round w3-display-topright" onclick="toggleFavorite('{{ app['name'] }}')">
+          <span class="icon icon-heart {% if app['fav'] == 'True' %}icon-red{% else %}icon-gray{% endif %}">
+          </span>
+        </button>
+        <a href="{{ app['url'] }}" style="text-decoration: none;">
+        {% if app["icon"] %}
+              <img src="{{ app['icon'] }}" alt="{{ app['name'] }}" style="width:30%">
+        {% else %}
+              <span class="icon icon-apps" style="width:30%;"></span>
+        {% endif %}
         </a>
-        <a href="{{ app['url'] }}"
-        class="w3-button w3-round-large w3-hover-opacity w3-hover-text-white" stye="max-width:100px;">
-          <div class="w3-padding-16">
-            <div class="w3-circle">
-              <img class="icon-app" src="{{ app['icon'] }}" alt="Icono {{ app['name'] }}" class="w3-image">
-            </div>
-          </div>
-          <div class="w3-padding-small">
-            <span class="w3-text-white">{{ app['name'] }}</span>
-          </div>
-        </a>
+        <h5>{{ app['name'] }}</h5>
       </div>
-      {% endfor %}
     </div>
+    {% endfor %}
   </div>
 </div>
