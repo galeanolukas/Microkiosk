@@ -111,6 +111,33 @@ def temas_disponibles():
         print("Error leyendo temas:", e)
     return temas
 
+@app.route('/toggle_fav', methods=['POST'])
+def toggle_fav(request):
+    app_name = request.args.get('app')
+    if not app_name:
+        return {'error': 'Se requiere nombre de app'}, 400
+    
+    try:
+        config = read_config()
+        # Verificar si la app existe en la configuración
+        if app_name not in config.get('apps', {}):
+            return {'error': 'Aplicación no encontrada'}, 404
+        # Cambiar estado fav (True<->False)
+        current_state = config['apps'][app_name].get('fav', False)
+        new_state = not current_state
+        config['apps'][app_name]['fav'] = new_state
+        # Guardar usando tu función update_config
+        update_config("apps", app_name, config['apps'][app_name])
+        
+        return {
+            'status': 'success',
+            'app': app_name,
+            'is_favorite': new_state
+        }
+        
+    except Exception as e:
+        return {'error': str(e)}, 500
+    
 #### Vistas por defecto del SO ###
 @app.route('/login', methods=['GET', 'POST'])
 def login(request):
@@ -175,17 +202,25 @@ def get_content_type(filename):
 @app.route('/static/<path:path>')
 @app.route('/apps/<app_name>/static/<path:path>')
 def serve_static(request, path, app_name=None):
-    # Determinar directorio base
     base_dir = f'apps/{app_name}/static' if app_name else 'static'
     file_path = f'{base_dir}/{path}'
-
+    
     try:
-        return send_file(file_path, content_type=get_content_type(path))
+        response = send_file(file_path, content_type=get_content_type(path))
+        # Cache por 1 año (en segundos)
+        response.headers['Cache-Control'] = 'public, max-age=31536000'
+        # Header adicional para compatibilidad
+        response.headers['Expires'] = 'Fri, 01 Jan 2038 00:00:00 GMT'
+        response.headers['Pragma'] = 'public'
+        return response
+    
     except OSError:
-        # Intentar fallback global si es una app
         if app_name:
             try:
-                return send_file(f'static/{path}', content_type=get_content_type(path))
+                response = send_file(f'static/{path}', content_type=get_content_type(path))
+                response.headers['Cache-Control'] = 'public, max-age=31536000'
+                response.headers['Pragma'] = 'public'
+                return response
             except OSError:
                 pass
         return "Not found", 404
@@ -323,61 +358,73 @@ def blue(request):
 
 @app.route('/wifi', methods=["GET", "POST"])
 def wifi_conect(request):
-    redes = scan_wifi()
-    config = read_config()
-    config_wifi = {"wifi": {}}
-    
-    context = {
-        "name": None,
-        "msj": None,
-        "ssid": None,
-        "password": None,
-        "modo": "ap",
-        "ip": "",
-        "appname": "WIFI MANAGER",
-        "tema": config["config"]["theme"]
-    }
-    # Cargar datos actuales de la config
-    if config:
-        context["ssid"] = config["wifi"]["ssid"]
-        context["password"] = config["wifi"]["password"]
-        context["modo"] = config["wifi"]["modo"]
-        if eval(config["wifi"]["ip_fija"]):
-            context["ip"] = config["wifi"]["ip"]
-    # Si es GET y hay un ssid seleccionado desde el navegador
-    if request.method == "GET":
-        ssid = request.args.get('n')
-        
-        if ssid:
-            context["ssid"] = ssid
-            context["password"] = ""  # limpiar password al seleccionar otra red
-            context["modo"] = "st"     # cambia automáticamente a modo estación
+    try:
+        # 1. Cargar configuración y redes disponibles
+        config = read_config()
+        redes = scan_wifi()  # Mover aquí para evitar escaneo innecesario en POST
+        # 2. Configurar contexto inicial
+        context = {
+            "name": None,
+            "msj": None,
+            "ssid": config.get("wifi", {}).get("ssid", ""),
+            "password": config.get("wifi", {}).get("password", ""),
+            "modo": config.get("wifi", {}).get("modo", "ap"),
+            "ip": config.get("wifi", {}).get("ip", "") if config.get("wifi", {}).get("ip_fija", "False").lower() == "true" else "",
+            "appname": "WIFI MANAGER",
+            "tema": config.get("config", {}).get("theme", "default")
+        }
+        # 3. Manejo de GET
+        if request.method == "GET":
+            ssid = request.args.get('n')
+            if ssid:
+                context.update({
+                    "ssid": ssid,
+                    "password": "",
+                    "modo": "st"
+                })
 
-    if request.method == "POST":
-        ssid = request.form['essid']
-        psk = request.form['password']
-        modo = request.form['modo']
-        ip = request.form['ip']
+        # 4. Manejo de POST
+        elif request.method == "POST":
+            ssid = request.form.get('essid', '').strip()
+            psk = request.form.get('password', '').strip()
+            modo = request.form.get('modo', 'ap')
+            ip = request.form.get('ip', '')
 
-        if ssid and psk:
-            update_config("wifi", "ssid", ssid)
-            update_config("wifi", "password", psk)
-            update_config("wifi", "modo", modo)
-            update_config("wifi", "ip", ip)
-            new_ip = read_config().get("wifi")["ip"]
-            
-            return show_message(request, title="Configuración Actualizada",
-                                message="La configuración de red ha sido modificada.",
-                                message_type='reconnect',
-                                action='reconnect',
-                                new_ip=new_ip,
-                                redirect_url=f'http://{new_ip}',
-                                button_text='Conectar Ahora')
-        else:
-            context['msj'] = "Debe completar SSID y contraseña."
-            return redirect('/wifi')
+            if ssid and psk:
+                # Actualizar configuración
+                update_config("wifi", "ssid", ssid)
+                update_config("wifi", "password", psk)
+                update_config("wifi", "modo", modo)
+                update_config("wifi", "ip", ip)
+                # Leer nueva configuración
+                new_config = read_config()
+                new_ip = new_config.get("wifi", {}).get("ip", "")
+                # Respuesta exitosa
+                return render_template('message.html',
+                    title="Configuración Actualizada",
+                    message="La configuración de red ha sido modificada.",
+                    message_type='reconnect',
+                    action='reconnect',
+                    new_ip=new_ip,
+                    redirect_url=f'http://{new_ip}' if new_ip else '/wifi',
+                    button_text='Conectar Ahora',
+                    tema=context["tema"]
+                )
+            else:
+                context['msj'] = "Debe completar SSID y contraseña."
+                # Mantener los valores enviados en el form
+                context.update({
+                    "ssid": ssid,
+                    "password": psk,
+                    "modo": modo,
+                    "ip": ip
+                })
+        # 5. Renderizar template
+        return render_template('wifi.html', redes=redes, **context)
 
-    return render_template('wifi.html', redes=redes, **context)
+    except Exception as e:
+        print(f"Error en wifi_conect: {str(e)}")
+        return Response(f"Error al procesar la configuración WiFi: {str(e)}")
 
 @app.route('/logout')
 def logout(request):

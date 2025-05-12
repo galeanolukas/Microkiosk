@@ -7,15 +7,15 @@
   <main id="main" class="w3-container w3-center w3-margin">
     {% include 'menu.html' %}
     <!-- Sección Favoritos (optimizada pero misma estructura) -->
-    <div class="w3-card w3-center w3-padding w3-border">
+    <div class="w3-container w3-center w3-padding w3-margin-top w3-border">
       <h5><span class="icon icon-heart icon-red"></span> FAVORITOS</h5>
       {% set favorite_count = 0 %}
-      {% for app in apps.values() %}
-        {% if app["fav"] == "True" %}
+      {% for key, app in apps.items() %}
+        {% if app["fav"] %}
           {% set favorite_count = favorite_count + 1 %}
-          <div class="w3-third w3-padding">
-            <a href="/{{ app['name'] }}/" class="w3-card w3-hover-shadow w3-white w3-round-large" style="text-decoration:none;display:block;">
-              <div class="w3-container w3-padding-small">
+          <div class="w3-third w3-padding w3-margin-top">
+            <a href="{{ app['url'] }}" class="w3-card w3-hover-shadow w3-round-large" style="text-decoration:none;display:block;">
+              <div class="w3-container w3-padding">
                 {% if app["icon"] %}
                   <img src="{{ app['icon'] }}" alt="Icono {{ app['name'] }}" style="width:48px;height:48px;margin:0 auto;display:block;">
                 {% else %}
@@ -23,7 +23,7 @@
                 {% endif %}
                 <h5 class="w3-text-black">{{ app['name'] }}</h5>
                 <div class="w3-light-grey w3-round-bottom w3-padding-small">
-                  <p>{{ app['info'] }}</p>
+                  {% if app['info'] %}<p>{{ app['info'] }}</p>{% else %}<br>{% endif %}
                   <p>{{ app['version'] }}</p>
                   <hr>
                   <small class="w3-text-grey">by {{ app['author'] }}</small>
@@ -77,7 +77,7 @@
       document.getElementById("footer").style.marginLeft = "0";
     }
   }
-  
+
   function toggleAppsMenu() {
     var panel = document.getElementById("AppsPanel");
     if (panel.classList.contains("w3-hide")) {

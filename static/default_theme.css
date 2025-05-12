@@ -1,4 +1,6 @@
-
+#mySidebar a{
+  text-decoration: none;
+}
 /* Estilo para el tema claro (light) */
 body.light-theme {
     background-color: white;

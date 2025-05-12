@@ -4,32 +4,28 @@
 {% include 'head.html' %}
 <body class="{{ tema }}-theme">
   {% include 'top_bar.html' %}
-
   <div class="w3-container">
-    <div class="w3-card w3-margin w3-padding">
       <h3 class="w3-center">Cargar Nueva App</h3>
       <form action="/upload" method="post" enctype="multipart/form-data">
         <div class="w3-row">
           <div class="w3-half w3-padding-small">
             <label class="w3-button w3-blue w3-block">
-              <span class="icon icon-upload"></span> Seleccionar Archivo
+              <span class="icon icon-folder icon-sm"></span> Seleccionar Archivo
               <input type="file" name="file_app" accept=".tar" style="display:none">
             </label>
           </div>
           <div class="w3-half w3-padding-small">
             <button type="submit" class="w3-button w3-indigo w3-block">
-              <span class="icon icon-install"></span> INSTALAR
+              <span class="icon icon-apps icon-sm"></span> INSTALAR
             </button>
           </div>
         </div>
       </form>
-    </div>
-
-    <div class="w3-card w3-margin">
+  </div>
+  <div class="w3-container w3-margin" style="height: 250px; overflow-y: auto;">
       <header class="w3-container w3-blue">
         <h3 class="w3-center">Aplicaciones Instaladas</h3>
       </header>
-
       {% if apps %}
       <div class="w3-responsive">
         <table class="w3-table w3-bordered">
@@ -51,10 +47,10 @@
             <td>{{ app.get("author", "Desconocido") }}</td>
             <td>
               <a href="{{ app['url'] }}" class="w3-button w3-blue w3-tiny">
-                <span class="icon icon-open"></span> Ver
+                <span class="icon icon-apps icon-sm"></span> Ver
               </a>
               <button onclick="confirmDelete('{{ app['name'] }}')" class="w3-button w3-red w3-tiny">
-                <span class="icon icon-delete"></span> Quitar
+                <span class="icon icon-trash icon-sm"></span> Quitar
               </button>
             </td>
           </tr>
@@ -66,9 +62,7 @@
         <p><span class="icon icon-info"></span> No hay aplicaciones instaladas</p>
       </div>
       {% endif %}
-    </div>
   </div>
-
   <div id="deleteModal" class="w3-modal">
     <div class="w3-modal-content w3-card" style="max-width:400px">
       <header class="w3-container w3-red">
@@ -86,30 +80,6 @@
       </footer>
     </div>
   </div>
-
-  <script>
-  let currentAppToDelete = '';
-
-  function confirmDelete(appName) {
-    document.getElementById('appToDelete').textContent = appName;
-    currentAppToDelete = appName;
-    document.getElementById('deleteModal').style.display = 'block';
-  }
-
-  function deleteApp() {
-    fetch(`/appmanager/delete?app=${encodeURIComponent(currentAppToDelete)}`, {
-      method: 'POST'
-    }).then(response => {
-      if(response.ok) {
-        window.location.reload();
-      } else {
-        alert('Error al eliminar');
-      }
-    });
-    document.getElementById('deleteModal').style.display = 'none';
-  }
-  </script>
-
   {% include "footer.html" %}
 </body>
 </html>

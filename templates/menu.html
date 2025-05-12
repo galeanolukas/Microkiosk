@@ -1,14 +1,15 @@
 <!--Menu Panel -->
-<div id="AppsPanel" class="w3-hide w3-animate-top">
-  <div class="w3-row-padding w3-center w3-margin-top">
-    {% for app in apps.values() %}
+<div id="AppsPanel" class="w3-hide w3-animate-top" style="max-height: 400px;">
+  <div class="w3-row-padding w3-center w3-margin-top" style="min-height:400px; overflow-y: auto;">
+    {% for key, app in apps.items() %}
     <!-- Cada tarjeta ocupa 12 columnas en móvil (100%), 4 en desktop (33.33%) -->
     <div class="w3-third">
-      <div class="w3-card w3-container w3-padding" style="min-height:150px;">
+      <div class="w3-display-container w3-padding">
         <!-- Botón favorito -->
-        <button class="w3-button w3-round w3-display-topright" onclick="toggleFavorite('{{ app['name'] }}')">
-          <span class="icon icon-heart {% if app['fav'] == 'True' %}icon-red{% else %}icon-gray{% endif %}">
-          </span>
+        <button class="favorite-btn w3-button w3-display-topright"
+                onclick="toggleFavorite('{{ key }}', this)"
+                title="{{ 'Quitar de favoritos' if app['fav'] else 'Agregar a favoritos' }}">
+                <span class="icon icon-heart {% if app['fav'] %}icon-red{% else %}icon-gray{% endif %}"></span>
         </button>
         <a href="{{ app['url'] }}" style="text-decoration: none;">
         {% if app["icon"] %}
